@@ -1,7 +1,8 @@
 # Bove2020_GVC_CoralReefs
-**Data and code accompanying the Coral GVC manuscript (Bove et al 2020; DOI: https://doi.org/10.1007/s00338-020-01995-7)**
 
-**Title:** Responses of coral gastrovascular cavity pH during light and dark incubations to reduced seawater pH suggest species-specific responses to the effects of ocean acidification on calcification
+**GitHub repository containing data and code accompanying the Coral GVC manuscript (Bove et al 2020; DOI: https://doi.org/10.1007/s00338-020-01995-7)**
+
+### Title: *Responses of coral gastrovascular cavity pH during light and dark incubations to reduced seawater pH suggest species-specific responses to the effects of ocean acidification on calcification*
 
 **Authors:** Colleen B. Bove, Robert F. Whitehead & Alina M. Szmant
 
