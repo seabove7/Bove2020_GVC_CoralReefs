@@ -13,10 +13,10 @@
 
 #### Repository contains the following:
 1. Data
-  * Calcification rate and pH<sub>GVC</sub> for all calcification trials (*Calc_all_18April20.csv*)
-  *  (*.csv*)
-  *  (*.csv*)
+   * Calcification rate and pH<sub>GVC</sub> for all calcification trials (*Calc_all_18April20.csv*)
+   *  (*.csv*)
+   *  (*.csv*)
 2. Figures
-  * Main Figures
-  * Supplemental Figures
+   * Main Figures
+   * Supplemental Figures
 
