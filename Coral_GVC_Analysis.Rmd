@@ -1,5 +1,5 @@
 ---
-title: "Coral GVC and Ocean Acidification"
+title: "Responses of coral gastrovascular cavity pH during light and dark incubations to reduced seawater pH suggest species-specific responses to the effects of ocean acidification on calcification"
 output: 
   html_document:
     theme: simplex
@@ -14,6 +14,27 @@ output:
   h1{color: navy !important}
   body{background-color: gray95 !important}
 </style>
+
+
+<br/>
+
+#### Colleen B. Bove^1,2^, Robert F. Whitehead^2^, Alina M. Szmant^2^
+
+^1^ Environment, Ecology, and Energy Program, University of North Carolina at Chapel Hill, Chapel Hill, NC, USA
+
+^2^ Center for Marine Science, University of North Carolina Wilmington, Wilmington, NC, USA
+
+<br/>
+
+#### **Abstract:**
+Coral polyps have a fluid-filled internal compartment, the gastrovascular cavity (GVC). Respiration and photosynthesis cause large daily excursions in GVC oxygen concentration (O~2~) and pH, but few studies have examined how this correlates with calcification rates. We hypothesized that GVC chemistry can mediate and ameliorate the effects of decreasing seawater pH (pH~SW~) on coral calcification. Microelectrodes were used to monitor O~2~ and pH within the GVC of *Montastraea cavernosa* and *Duncanopsammia axifuga* (pH only) in both the light and the dark, and three pH~SW~ levels (8.2, 7.9, and 7.6). At pH~SW~ 8.2, GVC O~2~ ranged from ca. 0 to over 400% saturation in the dark and light, respectively, with transitions from low to high (and vice versa) within minutes of turning the light on or off. For all three pH~SW~ treatments and both species, pH~GVC~ was always significantly above and below pH~SW~ in the light and dark, respectively. For *M. cavernosa* in the light, pH~GVC~ reached levels of pH 8.4–8.7 with no difference among pH~SW~ treatments tested; in the dark, GVC dropped below pH~SW~ and even below pH 7.0 in some trials at pH~SW~ 7.6. For *D. axifuga* in both the light and the dark, pH~GVC~ decreased linearly as pH~SW~ decreased. Calcification rates were measured in the light concurrent with measurements of GVC O~2~ and pH~GVC~ For both species, calcification rates were similar at pH~SW~ 8.2 and 7.9 but were significantly lower at pH~SW~ 7.6. Thus, for both species, calcification was protected from seawater acidification by intrinsic coral physiology at pH~SW~ 7.9 but not 7.6. Calcification was not correlated with pH~GVC~ for *M. cavernosa* but was for *D. axifuga*. These results highlight the diverse responses of corals to changes in pH~SW~, their varying abilities to control pH~GVC~, and consequently their susceptibility to ocean acidification.
+
+<br/>
+
+##### **Citation:**
+Bove, C.B., Whitehead, R.F. & Szmant, A.M. *Responses of coral gastrovascular cavity pH during light and dark incubations to reduced seawater pH suggest species-specific responses to the effects of ocean acidification on calcification*. Coral Reefs 39, 1675–1691 (2020). https://doi.org/10.1007/s00338-020-01995-7
+
+<br/>
 
 ```{r setup, include=FALSE}
 
@@ -33,6 +54,7 @@ library(cowplot)
 library(extrafont)
 library(plotly)
 library(kableExtra)
+library(pander)
 
 ## run the following two lines if running for the first time since installing 'extrafont'
 #font_import()
@@ -58,14 +80,14 @@ date <- Sys.Date()
 
 These figures were created using illustrator and image editing software.
 
-### **Figure 1**
+### <span style="color: #0072B2;">**Figure 1**</span>
 
 ![](Figures/Fig1_polyp_diagram.png)
 
 Simplified diagram of a coral polyp and skeleton morphology, with enlargements of the aboral tissue layers. There are two sets of tissue layers in corals: an oral diploblastic layer in which the epithelial layer does not calcify (dark pink), and an aboral diploblastic tissue layer in which the epithelium calcifies (known as the calicodermis: darker red). The turquoise blue layer represents the extracellular calcifying medium (ECM) in between the calicodermis and skeleton in which CaCO~3~ precipitation takes place. Letters and arrows represent pools and pathways by which ions, gases, and other substances can be transported or exchanged among coral tissues and compartments. **a** Water exchange between ambient seawater and the gastrovascular cavity (GVC) through the polyp mouth. **b** Active, passive, or paracellular flux from seawater across tissue layers into the GVC. **c** Exchange of metabolites from respiration, photosynthesis, and other metabolic processes between GVC and surrounding gastrodermal cells. **d, e** Exchange of ions between GVC, calicodermis, and sites of calcification by phagocytosis, phagosome migration, and active/passive transport mechanisms (Ca~2~^+^-ATPase; Ca~2~^+^ channels; proton pumps).
 
 
-### **Figure 2**
+### <span style="color: #0072B2;">**Figure 2**</span>
 
 <center>
 ![](Figures/Fig2_corals_electrode_images.png){#id .class width=50% height=50%}
@@ -80,13 +102,13 @@ Photographs of the three study corals under the same lighting conditions and the
 
 ### Figures
 
-### Figure **Figure 3**
+### <span style="color: #0072B2;">**Figure 3**</span>
 
-### Figure **Figure 4**
+### <span style="color: #0072B2;">**Figure 4**</span>
 
-### Figure **Figure 5**
+### <span style="color: #0072B2;">**Figure 5**</span>
 
-### Figure **Figure 6**
+### <span style="color: #0072B2;">**Figure 6**</span>
 
 
 ## Calcification Trials {.tabset}
@@ -107,7 +129,7 @@ cav1 <- subset(calc, Coral=="cav1") # make df of M. cavernosa colony 1 only
 cav2 <- subset(calc, Coral=="cav2") # make df of M. cavernosa colony 2 only
 dun <- subset(calc, Coral=="dun") # make df og D. axifuga only
 
-dun$timeb <- factor(dun$timeb, levels=c("15c","1c", "0c")) # reorder the timeb variables within D. axifuga df
+dun$timeb <- factor(dun$timeb, levels = c("15c","1c", "0c")) # reorder the timeb variables within D. axifuga df
 
 ```
 
@@ -118,175 +140,322 @@ kable(calc[c(1:2, 22:23, 51:52),], booktabs = TRUE, caption = "Coral identifier 
 
 ```
 
-### Analyses
+### *M. cavernosa* O~2~ (Figure 7a-c)
 
-```{r eval=FALSE, include=FALSE}
+<br/>
 
-cav$pH<- factor(cav$pH, levels=c("8.2", "7.9", "7.6"))
-#cav$pH<- factor(cav$pH, levels=c("7.6", "7.9", "8.2"))
-cav$ftime<- factor(cav$ftime, levels=c("1","0", "15"))
+#### **Figure 7a:** MCAV calcification rate (nmol CaCO~3~ hr^-1^ cm^-2^) against seawater pH
 
-dun$timeb<- factor(dun$timeb, levels=c("0c","1c", "15c"))
-#dun$timeb<- factor(dun$timeb, levels=c("1c","0c", "15c"))
-dun$pH<- factor(dun$pH, levels=c("8.2","7.9", "7.6"))
-#dun$pH<- factor(dun$pH, levels=c("7.9", "7.6", "8.2"))
+```{r MCAV1 O2 rate v SW pH, fig.align = 'center', fig.width = 4, fig.height = 3.5}
+
+#### Read in the pH data for MCAV 1
+o2 <- read.csv("Data/O2_cav_17April20.csv", head = TRUE) 
 
 
-###### AIC for eliminating 
-mod1 <- lm(nmol~pH*timeb*Coral, data=cav)
-mod2 <- lm(nmol~pH*timeb, data=cav)
-mod3 <- lm(nmol~pH*Coral, data=cav)
-mod4 <- lm(nmol~pH+timeb+Coral, data=cav)
-mod5 <- lm(nmol~pH+timeb, data=cav)
-mod6 <- lm(nmol~pH+Coral, data=cav)
-mod7 <- lm(nmol~pH, data=cav)
+#### Working with O2 calcification rate in each SW O2
 
-AIC(mod1,mod2,mod3,mod4,mod5,mod6,mod7)
-
-###### Calcification Models
-## MCAV  
-# p =  0.02545  (pH)
-# p =  0.59427  (time)
-abscav.lm2<-lm(nmol~pH, data=cav)
-anova(abscav.lm2)
-summary(abscav.lm2)
-AIC(abscav.lm2)
-# 8.2 v 7.9 = 0.8104
-# 8.2 v 7.6 = 0.0583
-# 7.9 v 7.6 = 0.0889
-
-## mean rates
-# 8.2 - 225.018
-# 7.9 - 219.714
-# 7.6 - 183.188
+## Linear model 
+O2_calcVO2_lm <- lm(rate ~ factor(pH), data = o2)
+#anova(O2_calcVO2_lm)
+#summary(O2_calcVO2_lm)
 
 
+## Plot
+O2_calc_sum <- summarySE(o2, measurevar = "rate", groupvars = c("pH"), na.rm = TRUE) # calculate mean +/- SD for plotting
 
-dun$timeb<- factor(dun$timeb, levels=c("1c", "15c", "0c"))
-## DAXI model
-# p =  0.001988  (pH)
-# p =  0.014108  (time)
-absdun.lm2<-lm(nmol~pH + timeb, data=dun)
-anova(absdun.lm2)
-summary(absdun.lm2)
-AIC(absdun.lm2)
-# 8.2 v 7.9 = 0.09686
-# 8.2 v 7.6 = 0.00219
-# 7.9 v 7.6 = 0.09696
-# 1 v 15 = 0.00395
+O2_calcVpH_plot <- ggplot(data = O2_calc_sum, aes(x = factor(pH), y = rate, colour = factor(pH))) +
+  theme_bw() + 
+  geom_errorbar(aes(x = factor(pH), ymin=rate-sd,ymax= rate+sd, colour = factor(pH)), width=0.14, position=position_dodge(0.3), size=0.9) + 
+  xlab("Seawater pH") + 
+  ylab(MLab) +
+  theme(text=element_text(family="Times New Roman"), legend.position="none", panel.grid.major=element_blank(), panel.grid.minor=element_blank(), panel.background=element_blank(),strip.background=element_blank(), strip.text=element_text(face="italic"), legend.key=element_blank()) +
+  scale_color_manual("Treatment",labels=c("7.6 O2","7.9 O2","8.2 O2"),values=c("#D55E00", "#009E73", "#0072B2")) +
+  geom_point(position=position_dodge(0.3),size=3.5, shape = 16) +
+  annotate(geom = "text", size = 3, x = 0.8, y = 0, label = "italic(P) == 0.93", parse = TRUE) + 
+  annotate(geom="text", x = 3.3, y = 420, label="a)", size = 5.5, fontface="bold") +
+  ylim(0,425)  
+O2_calcVpH_plot
 
-## mean rates
-# 8.2 - 2363.2
-# 7.9 - 1901.2
-# 7.6 - 1439.4
+```
+
+```{r MCAV1 O2 rate v SW pH tables}
+
+## Anova and summary tables
+pander(summary(O2_calcVO2_lm))
+pander(anova(O2_calcVO2_lm))
+
+```
+
+<br/>
+
+#### **Figure 7b:** MCAV calcification rate (nmol CaCO~3~ hr^-1^ cm^-2^) against GVC O~2~ saturation
+
+```{r MCAV1 O2 rate v GVC pH, fig.align = 'center', fig.width = 4, fig.height = 3.5}
+
+## Linear model 
+O2_calcVgvc_lm <- lm(rate ~ gvc, data = o2)
+#anova(O2_calcVgvc_lm)
+#summary(O2_calcVgvc_lm)
+
+## Plot
+O2_calcVgvc_plot <- ggplot(data = o2, aes(x = gvc, y = rate, colour = factor(pH), shape = factor(time), group = species)) +
+  theme_bw() + 
+  #geom_smooth(method = "lm", se = FALSE, colour = "darkgrey") +
+  xlab(expression(paste("GVC O"[2] ~ "saturation (%)"))) + 
+  theme(text=element_text(family="Times New Roman"), axis.title.y = element_blank(), axis.text.y = element_blank(), panel.grid.major=element_blank(), panel.grid.minor=element_blank(), panel.background=element_blank(),strip.background=element_blank(), strip.text=element_text(face="italic"), legend.key=element_blank()) +
+  scale_color_manual("Treatment",labels=c("7.6 pH","7.9 pH","8.2 pH"),values=c("#D55E00", "#009E73", "#0072B2")) +
+  scale_shape_manual("", labels = c("Control", "1 Hr", "15 Hr"), values = c(0,1,2)) +
+  geom_point(size = 2, stroke = 1.2) +
+  annotate(geom = "text", size = 3, x = 185, y = 0, label = "italic(P) == 0.08", parse = TRUE) +  
+  theme(legend.position=c(0.14, 0.95), legend.text = element_text(size = 8), legend.key.size = unit(0.6, "lines"), legend.background = element_rect(fill=NA)) +
+  guides(colour = FALSE, shape = guide_legend(override.aes = list(size = 1.8))) +
+  annotate(geom="text", x = 630, y = 420, label="b)", size = 5.5, fontface="bold") +
+  xlim(150,650) +
+  ylim(0,425)  
+O2_calcVgvc_plot
+
+```
+
+```{r MCAV1 O2 rate v GVC pH tables}
+
+## Anova and summary tables
+pander(summary(O2_calcVgvc_lm))
+pander(anova(O2_calcVgvc_lm))
+
+```
+
+<br/>
+
+#### **Figure 7c:** MCAV GVC O~2~ saturation against seawater pH
+
+```{r MCAV1 O2 GVC pH v SW pH, fig.align = 'center', fig.width = 4, fig.height = 3.5}
+
+## Linear model 
+O2_pHVgvc_lm <- lm(gvc ~ factor(pH), data = o2)
+#anova(O2_pHVgvc_lm)
+#summary(O2_pHVgvc_lm)
+
+## Plot
+O2_pHVgvc_sum <- summarySE(o2, measurevar = "gvc", groupvars = c("pH"), na.rm = TRUE) # calculate mean +/- SD for plotting
+
+O2_pHVgvc_plot <- ggplot(data = O2_pHVgvc_sum, aes(x = factor(pH), y = gvc, colour = factor(pH))) +
+  theme_bw() + 
+  geom_errorbar(aes(x = factor(pH), ymin=gvc-sd,ymax= gvc+sd, colour = factor(pH)), width=0.14,position=position_dodge(0.3), size=0.9) + 
+  xlab("Seawater pH") + 
+  ylab(expression(paste("GVC O"[2] ~ "saturation (%)"))) +
+  theme(text=element_text(family="Times New Roman"), legend.position="none", panel.grid.major=element_blank(), panel.grid.minor=element_blank(), panel.background=element_blank(),strip.background=element_blank(), strip.text=element_text(face="italic"), legend.key=element_blank()) +
+  scale_color_manual("Treatment",labels=c("7.6 pH","7.9 pH","8.2 pH"),values=c("#D55E00", "#009E73", "#0072B2")) +
+  geom_point(position=position_dodge(0.3),size=3.5, shape = 16) +
+  annotate(geom = "text", size = 3, x = 0.8, y = 150, label = "italic(P) == 0.14", parse = TRUE) +
+  annotate(geom="text", x = 3.3, y = 640, label="c)", size = 5.5, fontface="bold") +
+  ylim(150,650)  
+O2_pHVgvc_plot
+
+```
+
+```{r MCAV1 O2 GVC pH v SW pH tables}
+
+## Anova and summary tables
+pander(summary(O2_pHVgvc_lm))
+pander(anova(O2_pHVgvc_lm))
+
+```
+
+<br/>
 
 
-###### GVC Models
-## MCAV: GVC versus calc
-# p =  0.6758
-# R = -0.01708
-gccav.lm<-lm(nmol~gvc, data=cav)
-anova(gccav.lm)
-summary(gccav.lm)
+### *M. cavernosa* pH (Figure 7d-f)
 
-## MCAV: GVC versus pH
-# p =  0.2467
-# R = 0.01772
-gpcav.lm2<-lm(gvc~pH, data=cav)
-anova(gpcav.lm2)
-summary(gpcav.lm2)
+```{r MCAV pH df modifications}
 
-
-# DAXI: GVC versus calc
-# p =  0.002035
-# R = 0.3973
-gcdun.lm2<-lm(nmol~gvc+timeb, data=dun)
-anova(gcdun.lm2)
-summary(gcdun.lm2)
-
-# DAXI: GVC versus pH 
-# p =  0.0002053
-# R = 0.5468
-gpdun.lm2<-lm(gvc~pH+timeb, data=dun)
-anova(gpdun.lm2)
-summary(gpdun.lm2)
-
-
-###### looking at linear models for figure:
-
-# GVC~pH: S=0.5669; P<0.001; R2=0.6024
-lm.dun.gvc.pH <- lm(gvc ~ water, data = dun)
-lm.dun.gvc.pH
-summary(lm.dun.gvc.pH)
-
-# rate~pH (T1): S=2301; P=0.039; R2=0.4002
-dunT1 <- subset(dun, timeb == "1c")
-lm.dun.nmol.1.pH <- lm(nmol ~ pH, data = dunT1)
-lm.dun.nmol.1.pH
-summary(lm.dun.nmol.1.pH)
-
-# rate~pH (T15): S=2301; P=0.039; R2=0.4002
-dunT15 <- subset(dun, timeb == "15c")
-lm.dun.nmol.15.pH <- lm(nmol ~ pH, data = dunT15)
-lm.dun.nmol.15.pH
-summary(lm.dun.nmol.15.pH)
-
-# rate~GVC: S=1774; P=0149; R2=0.1834
-lm.dun.nmol.gvc <- lm(nmol ~ gvc, data = dun)
-lm.dun.nmol.gvc
-summary(lm.dun.nmol.gvc)
-
-
-
+cav$pH <- factor(cav$pH, levels = c("8.2", "7.9", "7.6")) # reorder pH treatments
+cav$ftime <- factor(cav$ftime, levels = c("1","0", "15"))
 
 ```
 
 
-### Figures
+#### **Figure 7d:** MCAV calcification rate (nmol CaCO~3~ hr^-1^ cm^-2^) against seawater pH
 
-```{r eval=FALSE, include=FALSE}
+```{r MCAV1 pH rate v SW pH, fig.align = 'center', fig.width = 4, fig.height = 3.5}
 
-###### Mean Calcification versus pH figures (Figure 6a)
+## Model selection (using AIC)
+mod1 <- lm(nmol ~ pH * timeb * Coral, data = cav)
+mod2 <- lm(nmol ~ pH * timeb, data = cav)
+mod3 <- lm(nmol ~ pH * Coral, data = cav)
+mod4 <- lm(nmol ~ pH + timeb + Coral, data = cav)
+mod5 <- lm(nmol ~ pH + timeb, data = cav)
+mod6 <- lm(nmol ~ pH + Coral, data = cav)
+mod7 <- lm(nmol ~ pH, data = cav)
+AIC_mcav <- AIC(mod1, mod2, mod3, mod4, mod5, mod6, mod7) # mod 6 (nmol ~ pH + Coral) has the lowest AIC, however mod7 is close and moving forward with that one.
 
-calc$pH<- factor(calc$pH, levels=c("7.6","7.9","8.2"))
+#      df      AIC
+# mod1 17 549.6441
+# mod2 15 545.8675
+# mod3  7 540.5252
+# mod4 10 544.8113
+# mod5  9 542.9482
+# mod6  5 536.9671
+# mod7  4 537.5455 **
 
-# MCAV
-c.abs<-summarySE(cav, measurevar="nmol", groupvars=c("pH", "species"), na.rm=T)
-#  pH     nmol       sd 
-# 8.2 220.6641 48.96862 
-# 7.9 207.2873 61.38312 
-# 7.6 171.4325 38.61970 
 
-c.abs$pH<- factor(c.abs$pH, levels=c("7.6","7.9","8.2"))
-Mcav1 <- ggplot(c.abs,aes(x=pH,y=nmol, colour=pH, group = species)) + 
+## Linear model 
+pH_calcVpH_lm <- lm(nmol ~ pH, data = cav)
+#anova(pH_calcVpH_lm)
+#summary(pH_calcVpH_lm)
+
+
+## Plot
+cav$pH <- factor(cav$pH, levels = c("7.6","7.9","8.2")) # reorder pH treatment levels
+pH_calc_sum <- summarySE(cav, measurevar = "nmol", groupvars = c("pH", "species"), na.rm = TRUE) # calculate mean +/- SD for plotting
+ 
+pH_calcVpH_plot <- ggplot(pH_calc_sum, aes(x = pH,y = nmol, colour = pH, group = species)) + 
   theme_bw() + 
-  geom_point(data = cav, aes(x = pH, y = nmol, colour = pH, shape = Coral), position = position_jitterdodge(), size = 2, alpha = 0.3) +
-  geom_errorbar(aes(ymin=nmol-sd,ymax= nmol+sd), width=0.14,position=position_dodge(0.3), size=0.9) + 
+  #geom_point(data = cav, aes(x = pH, y = nmol, colour = pH, shape = Coral), position = position_jitterdodge(), size = 2, alpha = 0.3) +
+  geom_errorbar(aes(ymin = nmol-sd, ymax = nmol+sd), width=0.14, position = position_dodge(0.3), size = 0.9) + 
   xlab("Seawater pH") + 
   ylab(MLab) +
   theme(legend.position="none", panel.grid.major=element_blank(), panel.grid.minor=element_blank(), panel.background=element_blank(),strip.background=element_blank(), strip.text=element_text(face="italic"), legend.key=element_blank(), text=element_text(family="Times New Roman")) +
-  scale_color_manual("Treatment",labels=c("7.6 pH","7.9 pH","8.2 pH"),values=c("#D55E00", "#009E73", "#0072B2")) +
+  scale_color_manual("Treatment", labels = c("7.6 pH","7.9 pH","8.2 pH"), values=c("#D55E00", "#009E73", "#0072B2")) +
   scale_shape_manual("",values=c(1,16)) + 
   geom_point(position=position_dodge(0.3),size=3.5, shape = 16) + 
   annotate(geom="text", x = 3.3, y = 420, label="d)", size = 5.5, fontface="bold") +
   annotate(geom = "text", x = 0.8, y = 0, size = 3, label = "italic(P) == 0.02", parse = TRUE) +  
   ylim(0,425)  
+pH_calcVpH_plot
+
+```
+
+```{r MCAV1 pH rate v SW pH tables}
+
+## Anova and summary tables
+pander(summary(pH_calcVpH_lm))
+pander(anova(pH_calcVpH_lm))
+
+```
+
+<br/>
+
+#### **Figure 7e:** MCAV calcification rate (nmol CaCO~3~ hr^-1^ cm^-2^) against GVC O~2~ saturation
+
+```{r MCAV1 pH rate v GVC pH, fig.align = 'center', fig.width = 4, fig.height = 3.5}
+
+## Linear model 
+pH_calcVgvc_lm <- lm(nmol ~ gvc, data = cav)
+#anova(pH_calcVgvc_lm)
+#summary(pH_calcVgvc_lm)
+
+## Plot
+cav$shape <- paste(cav$Coral, cav$ftime, sep = "_") # create column for shape identifier for colony and time step combined
+
+pH_calcVgvc_plot <- ggplot(cav, aes(x = gvc, y = nmol, colour = pH, shape = shape, group = species)) + 
+  theme_bw() +
+  geom_point(size = 2, stroke = 1.2) +
+  xlab("GVC pH") +
+  theme(legend.position="none", axis.title.y = element_blank(), axis.text.y = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), panel.background = element_blank(), strip.background = element_blank(), strip.text = element_text(face = "italic"), legend.key = element_blank(), text=element_text(family="Times New Roman")) +
+  scale_color_manual("Treatment", labels = c("7.6 pH", "7.9 pH", "8.2 pH"), values = c("#D55E00", "#009E73", "#0072B2")) +
+  scale_shape_manual("", labels = c("MCAV1 Control", "MCAV1 1 Hr", "MCAV1 15 Hr", "MCAV2 Control", "MCAV2 1 Hr", "MCAV2 15 Hr"), values = c(0,1,2,15,16,17)) +
+  theme(legend.position=c(0.4, 0.95), legend.text = element_text(size = 8), legend.key.size = unit(0.6, "lines"), legend.background = element_rect(fill=NA)) +
+  guides(colour = FALSE, shape = guide_legend(override.aes = list(size = 1.3), ncol = 2)) +
+  annotate(geom = "text", size = 3, x = 8, y = 0, label = "italic(P) == 0.68", parse = TRUE) +  
+  annotate(geom="text", x = 8.85, y = 420, label="e)", size = 5.5, fontface="bold") +
+  ylim(0,425) +
+  xlim(7.9,8.9)
+pH_calcVgvc_plot
+
+```
+
+```{r MCAV1 pH rate v GVC pH tables}
+
+## Anova and summary tables
+pander(summary(pH_calcVgvc_lm))
+pander(anova(pH_calcVgvc_lm))
+
+```
+
+<br/>
+
+#### **Figure 7f:** MCAV GVC O~2~ saturation against seawater pH
+
+```{r MCAV1 pH GVC pH v SW pH, fig.align = 'center', fig.width = 4, fig.height = 3.5}
+
+## Linear model 
+pH_pHVgvc_lm <- lm(gvc ~ pH, data = cav)
+#anova(pH_pHVgvc_lm)
+#summary(pH_pHVgvc_lm)
 
 
-dun$pH<- factor(dun$pH, levels=c("7.6","7.9","8.2"))
+## Plot
+pH_pHVgvc_sum <- summarySE(cav, measurevar = "gvc", groupvars = c("pH", "species"), na.rm = TRUE) # calculate mean +/- SD for plotting
+pH_pHVgvc_sum$pH<- factor(pH_pHVgvc_sum$pH, levels = c("7.6","7.9","8.2")) # reorder factors of pH for plotting
 
-# DAXI
-d.abs<-summarySE(dun,measurevar="nmol",groupvars=c("pH", "timeb", "species"), na.rm=T)
-# pH   timeb    nmol   sd 
-# 7.6    1c  1003.6   630
-# 7.6   15c  1978.3   439
-# 7.9    1c  1548.6   880
-# 7.9   15c  2357.0   472
-# 8.2    0c  2363.2   265
-# 8.2    1c  2256.1   299
-# 8.2   15c  2573.5   458
+pH_pHVgvc_plot <- ggplot(pH_pHVgvc_sum, aes(x = pH, y = gvc, colour = pH, group = species)) +
+  theme_bw() +
+  #geom_point(data = cav, aes(x = pH, y = gvc, colour = pH, shape = Coral), position = position_jitterdodge(), size = 2, alpha = 0.3) +
+  geom_errorbar(aes(ymin = gvc - se, ymax = gvc + se), width = 0.14, position = position_dodge(0.3), size = 0.9) +
+  geom_point(position = position_dodge(0.3), size = 3.5, shape = 16) +
+  xlab("Seawater pH") +
+  ylab("GVC pH") +
+  theme(legend.position="none", panel.grid.major = element_blank(), panel.grid.minor = element_blank(), panel.background = element_blank(), strip.background = element_blank(), strip.text = element_text(face = "italic"), legend.key = element_blank(), text=element_text(family="Times New Roman")) +
+  scale_color_manual("Treatment", labels = c("7.6 pH", "7.9 pH", "8.2 pH"), values = c("#D55E00", "#009E73", "#0072B2")) +
+  annotate(geom = "text", x = 0.8, y = 7.907, size = 3, label = "italic(P) == 0.25", parse = TRUE) +
+  annotate(geom="text", x = 3.3, y = 8.87, label="f)", size = 5.5, fontface="bold") +
+  scale_shape_manual("",values=c(1,16)) + 
+  ylim(7.9,8.9)
+pH_pHVgvc_plot
 
-Daxi1 <- ggplot(data = d.abs, aes(x = pH, y = nmol, colour = pH, shape = timeb, group = timeb)) +
+```
+
+```{r MCAV1 pH GVC pH v SW pH tables}
+
+## Anova and summary tables
+pander(summary(pH_pHVgvc_lm))
+pander(anova(pH_pHVgvc_lm))
+
+```
+
+<br/>
+
+
+### *D. axifuga* pH (Figure 7g-i)
+
+```{r DAXI pH df manupulation}
+
+dun$timeb <- factor(dun$timeb, levels = c("0c","1c", "15c")) # reorder time factors
+#dun$timeb <- factor(dun$timeb, levels = c("1c","0c", "15c")) # reorder time factors again
+dun$pH <- factor(dun$pH, levels = c("8.2","7.9", "7.6")) # reorder pH treatments
+
+```
+
+#### **Figure 7g:** DAXI calcification rate (nmol CaCO~3~ hr^-1^ polyp^-1^) against seawater pH
+
+```{r DAXI pH rate v SW pH, fig.align = 'center', fig.width = 4, fig.height = 3.5}
+
+### Statistical analyses
+
+## Overall linear model 
+dun_pH_calcVpH_lm <- lm(nmol ~ pH + timeb, data = dun)
+#anova(dun_pH_calcVpH_lm)
+#summary(dun_pH_calcVpH_lm)
+
+## Linear models per each experimental exposure time (T1 v T15)
+# rate~pH (T1): S=2301; P=0.039; R2=0.4002
+dunT1 <- subset(dun, timeb == "1c")
+dunT1_pH_calcVpH_lm <- lm(nmol ~ water, data = dunT1)
+#dunT1_pH_calcVpH_lm
+#summary(dunT1_pH_calcVpH_lm)
+
+# rate~pH (T15): S=2301; P=0.039; R2=0.4002
+dunT15 <- subset(dun, timeb == "15c")
+dunT15_pH_calcVpH_lm <- lm(nmol ~ water, data = dunT15)
+#dunT15_pH_calcVpH_lm
+#summary(dunT15_pH_calcVpH_lm)
+
+
+### Plot
+dun_pH_calc_sum <- summarySE(dun, measurevar = "nmol",groupvars = c("pH", "timeb", "species"), na.rm = TRUE) # calculate mean +/- SD for plotting
+dun_pH_calc_sum$pH <- factor(dun_pH_calc_sum$pH, levels = c("7.6", "7.9", "8.2")) # to reorder pH treatments for plotting
+
+dun_pH_calcVpH_plot <- ggplot(data = dun_pH_calc_sum, aes(x = pH, y = nmol, colour = pH, shape = timeb, group = timeb)) +
   geom_smooth(method = "lm", colour = "darkgrey", se = FALSE, position=position_dodge(0.3)) +
   theme_bw() +
   #geom_point(data = dun, aes(x = pH, y = nmol, colour = pH, shape = timeb, group = timeb), position = position_dodge(0.36), size = 2, alpha = 0.3) +
@@ -305,32 +474,34 @@ Daxi1 <- ggplot(data = d.abs, aes(x = pH, y = nmol, colour = pH, shape = timeb, 
   annotate(geom = "text", x = 3.18, y = 0, size = 3, label = as.character(expression(paste(italic(R) ['1H'] ^"2"  == "0.40"))), parse = TRUE) + 
   annotate(geom="text", x = 3.3, y = 3400, label="g)", size = 5.5, fontface="bold") +
   ylim(0,3500) 
+dun_pH_calcVpH_plot
+
+```
+
+```{r DAXI pH rate v SW pH tables}
+
+## Anova and summary tables
+pander(summary(dun_pH_calcVpH_lm))
+pander(anova(dun_pH_calcVpH_lm))
+
+```
+
+<br/>
+  
+#### **Figure 7h:** DAXI calcification rate (nmol CaCO~3~ hr^-1^ polyp^-1^) against GVC O~2~ saturation
+  
+```{r DAXI pH rate v GVC pH, fig.align = 'center', fig.width = 4, fig.height = 3.5}
+
+## Linear model 
+dun_pH_calcVgvc_lm <- lm(nmol ~ gvc, data = dun) # (rate~GVC: S=1774; P=0149; R2=0.1834)
+#anova(dun_pH_calcVgvc_lm)
+#summary(dun_pH_calcVgvc_lm)
 
 
+## Plot
+dun$pH <- factor(dun$pH, levels = c("7.6", "7.9", "8.2")) # to reorder pH treatments for plotting
 
-###### Calcification versus GVC pH figures (Figure 6b)
-
-cav$shape <- paste(cav$Coral, cav$ftime, sep = "_")
-
-# MCAV with 8.2 Control trials
-Mcav2 <- ggplot(cav, aes(x = gvc, y = nmol, colour = pH, shape = shape, group = species)) + 
-  theme_bw() +
-  geom_point(size = 2, stroke = 1.2) +
-  xlab("GVC pH") +
-  theme(legend.position="none", axis.title.y = element_blank(), axis.text.y = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), panel.background = element_blank(), strip.background = element_blank(), strip.text = element_text(face = "italic"), legend.key = element_blank(), text=element_text(family="Times New Roman")) +
-  scale_color_manual("Treatment", labels = c("7.6 pH", "7.9 pH", "8.2 pH"), values = c("#D55E00", "#009E73", "#0072B2")) +
-  scale_shape_manual("", labels = c("MCAV1 Control", "MCAV1 1 Hr", "MCAV1 15 Hr", "MCAV2 Control", "MCAV2 1 Hr", "MCAV2 15 Hr"), values = c(0,1,2,15,16,17)) +
-  theme(legend.position=c(0.4, 0.95), legend.text = element_text(size = 8), legend.key.size = unit(0.6, "lines"), legend.background = element_rect(fill=NA)) +
-  guides(colour = FALSE, shape = guide_legend(override.aes = list(size = 1.3), ncol = 2)) +
-  annotate(geom = "text", size = 3, x = 8, y = 0, label = "italic(P) == 0.68", parse = TRUE) +  
-  annotate(geom="text", x = 8.85, y = 420, label="e)", size = 5.5, fontface="bold") +
-  ylim(0,425) +
-  xlim(7.9,8.9)
-
-
-
-# DAXI with 8.2 Control trials
-Daxi2 <- ggplot(dun, aes(x = gvc, y = nmol, colour = pH, shape = ftime, group = Coral)) +
+dun_pH_calcVgvc_plot <- ggplot(dun, aes(x = gvc, y = nmol, colour = pH, shape = ftime, group = Coral)) +
   stat_smooth(method = 'lm', colour = "darkgrey", se = FALSE) +
   theme_bw() +
   geom_point(size = 2.5) +
@@ -346,32 +517,34 @@ Daxi2 <- ggplot(dun, aes(x = gvc, y = nmol, colour = pH, shape = ftime, group = 
   annotate(geom="text", x = 8.85, y = 3400, label="h)", size = 5.5, fontface="bold") +
   ylim(0,3500) +
   xlim(7.9,8.9)
+dun_pH_calcVgvc_plot
 
+```
 
+```{r DAXI pH rate v GVC pH tables}
 
+## Anova and summary tables
+pander(summary(dun_pH_calcVgvc_lm))
+pander(anova(dun_pH_calcVgvc_lm))
 
-###### Mean GVC pH versus seawater pH figures (Figure 6c)
+```
 
-# MCAV
-c.gvc <- summarySE(cav, measurevar = "gvc", groupvars = c("pH", "species"), na.rm = T)
-c.gvc$pH<- factor(c.gvc$pH, levels=c("7.6","7.9","8.2"))
-Mcav3 <- ggplot(c.gvc, aes(x = pH, y = gvc, colour = pH, group = species)) +
-  theme_bw() +
-  #geom_point(data = cav, aes(x = pH, y = gvc, colour = pH, shape = Coral), position = position_jitterdodge(), size = 2, alpha = 0.3) +
-  geom_errorbar(aes(ymin = gvc - se, ymax = gvc + se), width = 0.14, position = position_dodge(0.3), size = 0.9) +
-  geom_point(position = position_dodge(0.3), size = 3.5, shape = 16) +
-  xlab("Seawater pH") +
-  ylab("GVC pH") +
-  theme(legend.position="none", panel.grid.major = element_blank(), panel.grid.minor = element_blank(), panel.background = element_blank(), strip.background = element_blank(), strip.text = element_text(face = "italic"), legend.key = element_blank(), text=element_text(family="Times New Roman")) +
-  scale_color_manual("Treatment", labels = c("7.6 pH", "7.9 pH", "8.2 pH"), values = c("#D55E00", "#009E73", "#0072B2")) +
-  annotate(geom = "text", x = 0.8, y = 7.907, size = 3, label = "italic(P) == 0.25", parse = TRUE) +
-  annotate(geom="text", x = 3.3, y = 8.87, label="f)", size = 5.5, fontface="bold") +
-  scale_shape_manual("",values=c(1,16)) + 
-  ylim(7.9,8.9) 
+<br/>
+  
+#### **Figure 7i:** DAXI GVC O~2~ saturation against seawater pH
+  
+```{r DAXI pH GVC pH v SW pH, fig.align = 'center', fig.width = 4, fig.height = 3.5}
 
-# DAXI
-d.gvc <- summarySE(dun, measurevar = "gvc", groupvars = c("pH", "species"), na.rm = T)
-Daxi3 <- ggplot(d.gvc, aes(x = pH, y = gvc, colour = pH, group = species)) +
+## Linear model 
+#dun_pH_pHVgvc_lm <- lm(gvc ~ pH + timeb, data = dun) # since time was non-significant, we proceeded without it below:
+dun_pH_pHVgvc_lm <- lm(gvc ~ water, data = dun) # using water (pH) instead of (pH) because it is numeric for calculating the slope (GVC~pH: S=0.5669; P<0.001; R2=0.6024)
+#anova(dun_pH_pHVgvc_lm)
+#summary(dun_pH_pHVgvc_lm)
+
+## Plot
+dun_pH_pHVgvc_sum <- summarySE(dun, measurevar = "gvc", groupvars = c("pH", "species"), na.rm = TRUE) # calculate mean +/- SD for plotting
+
+dun_pH_pHVgvc_plot <- ggplot(dun_pH_pHVgvc_sum, aes(x = pH, y = gvc, colour = pH, group = species)) +
   theme_bw() +
   geom_smooth(method = 'lm', colour = "darkgrey", se = FALSE) +
   #geom_point(data = dun, aes(x = pH, y = gvc, colour = pH, group = species), position = position_jitterdodge(), size = 2, alpha = 0.3) +
@@ -386,115 +559,38 @@ Daxi3 <- ggplot(d.gvc, aes(x = pH, y = gvc, colour = pH, group = species)) +
   annotate(geom = "text", x = 3.22, y = 7.97, size = 3, label = as.character(expression(paste(italic(P)  < 0.01))), parse = TRUE) +
   annotate(geom = "text", x = 3.2, y = 7.91, size = 3, label = as.character(expression(paste(italic(R) ^"2"  == "0.60"))), parse = TRUE) + 
   annotate(geom="text", x = 3.3, y = 8.87, label="i)", size = 5.5, fontface="bold") +
-  ylim(7.9,8.9) 
-
-
-
-
-###################################################### O2 portion of figure 8:
-
-o2 <- read.csv("/Users/colleen/Desktop/O2_test_17April20.csv", head= TRUE)
-
-###### Stats Models
-## calc v pHsw  
-# p =  0.9254  (pH)
-# p =  0.3744  (time)
-o2calc.lm1<-lm(rate ~ factor(pH), data = o2)
-anova(o2calc.lm1)
-summary(o2calc.lm1)
-AIC(o2calc.lm1)
-# 8.2 v 7.9 = 
-# 8.2 v 7.6 = 0.43891
-# 7.9 v 7.6 = 0.87701
-
-## calc v pHgvc  
-# p =  0.07892
-# R = 0.2963
-o2calc.lm2<-lm(rate ~ gvc, data = o2)
-anova(o2calc.lm2)
-summary(o2calc.lm2)
-AIC(o2calc.lm2)
-
-## pHgvc v pHsw  
-# p =  0.424
-# R = 0.01751
-o2ph.lm2<-lm(gvc ~ factor(pH), data = o2)
-anova(o2ph.lm2)
-summary(o2ph.lm2)
-AIC(o2ph.lm2)
-
-
-############ Figure ############
-
-calc.sum<-summarySE(o2, measurevar="rate", groupvars=c("pH"), na.rm=T)
-calcplot <- ggplot(data = calc.sum, aes(x = factor(pH), y = rate, colour = factor(pH))) +
-  theme_bw() + 
-  geom_errorbar(aes(x = factor(pH), ymin=rate-sd,ymax= rate+sd, colour = factor(pH)), width=0.14,position=position_dodge(0.3), size=0.9) + 
-  xlab("Seawater pH") + 
-  ylab(MLab) +
-  theme(text=element_text(family="Times New Roman"), legend.position="none", panel.grid.major=element_blank(), panel.grid.minor=element_blank(), panel.background=element_blank(),strip.background=element_blank(), strip.text=element_text(face="italic"), legend.key=element_blank()) +
-  scale_color_manual("Treatment",labels=c("7.6 pH","7.9 pH","8.2 pH"),values=c("#D55E00", "#009E73", "#0072B2")) +
-  geom_point(position=position_dodge(0.3),size=3.5, shape = 16) +
-  annotate(geom = "text", size = 3, x = 0.8, y = 0, label = "italic(P) == 0.93", parse = TRUE) + 
-  annotate(geom="text", x = 3.3, y = 420, label="a)", size = 5.5, fontface="bold") +
-  ylim(0,425)  
-
-
-gvcplot <- ggplot(data = o2, aes(x = gvc, y = rate, colour = factor(pH), shape = factor(time), group = species)) +
-  theme_bw() + 
-  #geom_smooth(method = "lm", se = FALSE, colour = "darkgrey") +
-  xlab(expression(paste("GVC O"[2] ~ "saturation (%)"))) + 
-  theme(text=element_text(family="Times New Roman"), axis.title.y = element_blank(), axis.text.y = element_blank(), panel.grid.major=element_blank(), panel.grid.minor=element_blank(), panel.background=element_blank(),strip.background=element_blank(), strip.text=element_text(face="italic"), legend.key=element_blank()) +
-  scale_color_manual("Treatment",labels=c("7.6 pH","7.9 pH","8.2 pH"),values=c("#D55E00", "#009E73", "#0072B2")) +
-  scale_shape_manual("", labels = c("Control", "1 Hr", "15 Hr"), values = c(0,1,2)) +
-  geom_point(size = 2, stroke = 1.2) +
-  annotate(geom = "text", size = 3, x = 185, y = 0, label = "italic(P) == 0.08", parse = TRUE) +  
-  theme(legend.position=c(0.14, 0.95), legend.text = element_text(size = 8), legend.key.size = unit(0.6, "lines"), legend.background = element_rect(fill=NA)) +
-  guides(colour = FALSE, shape = guide_legend(override.aes = list(size = 1.8))) +
-  annotate(geom="text", x = 630, y = 420, label="b)", size = 5.5, fontface="bold") +
-  xlim(150,650) +
-  ylim(0,425)  
-
-
-o2.sum<-summarySE(o2, measurevar="gvc", groupvars=c("pH"), na.rm=T)
-bothplot <- ggplot(data = o2.sum, aes(x = factor(pH), y = gvc, colour = factor(pH))) +
-  theme_bw() + 
-  geom_errorbar(aes(x = factor(pH), ymin=gvc-sd,ymax= gvc+sd, colour = factor(pH)), width=0.14,position=position_dodge(0.3), size=0.9) + 
-  xlab("Seawater pH") + 
-  ylab(expression(paste("GVC O"[2] ~ "saturation (%)"))) +
-  theme(text=element_text(family="Times New Roman"), legend.position="none", panel.grid.major=element_blank(), panel.grid.minor=element_blank(), panel.background=element_blank(),strip.background=element_blank(), strip.text=element_text(face="italic"), legend.key=element_blank()) +
-  scale_color_manual("Treatment",labels=c("7.6 pH","7.9 pH","8.2 pH"),values=c("#D55E00", "#009E73", "#0072B2")) +
-  geom_point(position=position_dodge(0.3),size=3.5, shape = 16) +
-  annotate(geom = "text", size = 3, x = 0.8, y = 150, label = "italic(P) == 0.14", parse = TRUE) +
-  annotate(geom="text", x = 3.3, y = 640, label="c)", size = 5.5, fontface="bold") +
-  ylim(150,650)  
-
-
-
-
-
-
+  ylim(7.9,8.9)
+dun_pH_pHVgvc_plot
 
 ```
 
+```{r DAXI pH GVC pH v SW pH tables}
 
-### Figure **Figure 7**
+## Anova and summary tables
+pander(summary(dun_pH_pHVgvc_lm))
+pander(anova(dun_pH_pHVgvc_lm))
 
-```{r eval=FALSE, include=FALSE}
+```
 
-######## combined figure 8
-
-MCAV <- plot_grid(Mcav1, Mcav2, Mcav3, ncol = 3, rel_widths = c(1, 0.85, 1))
-DAXI <- plot_grid(Daxi1, Daxi2, Daxi3, ncol = 3, rel_widths = c(1.02, 0.85, 0.98))
-gvcO2 <- plot_grid(calcplot, gvcplot, bothplot, ncol = 3, rel_widths = c(1, 0.85, 1))
+<br/>
 
 
+### <span style="color: #0072B2;">**Figure 7**</span>
+
+```{r combined calcification experiment fig, fig.align='center', fig.height=9.7, fig.width=10, message=FALSE, warning=FALSE}
+
+## Make each row of similar experiment
+MCAV_O2 <- plot_grid(O2_calcVpH_plot, O2_calcVgvc_plot, O2_pHVgvc_plot, ncol = 3, rel_widths = c(1, 0.85, 1))
+MCAV_pH <- plot_grid(pH_calcVpH_plot, pH_calcVgvc_plot, pH_pHVgvc_plot, ncol = 3, rel_widths = c(1, 0.85, 1))
+DAXI_pH <- plot_grid(dun_pH_calcVpH_plot, dun_pH_calcVgvc_plot, dun_pH_pHVgvc_plot, ncol = 3, rel_widths = c(1.02, 0.85, 0.98))
+
+## Combine all 3 rows for full figure
 extrafont::loadfonts()
-plot_grid(gvcO2, MCAV, DAXI, axis = "r", ncol = 1, scale = 0.9, labels = c("M. cavernosa O2 ","M. cavernosa pH", "D. axifuga pH"), hjust = 0, vjust = 1) 
+plot_grid(MCAV_O2, MCAV_pH, DAXI_pH, axis = "r", ncol = 1, scale = 0.9, labels = c("M. cavernosa pH ","M. cavernosa pH", "D. axifuga pH"), hjust = 0, vjust = 1) 
 
-
+## Save final figure 7 as PDF
 extrafont::loadfonts()
-ggsave("Fig8_Calcification2_19April2020.pdf", width = 10, height = 9.7, useDingbats = FALSE) # save final figure
+ggsave("Figures/Fig7_Calcification.pdf", width = 10, height = 9.7, useDingbats = FALSE)
 
 ```
 
