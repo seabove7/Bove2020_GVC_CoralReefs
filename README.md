@@ -13,10 +13,15 @@
 
 #### Repository contains the following:
 1. Data
-   * Calcification rate and pH<sub>GVC</sub> for all calcification trials (*Calc_all_18April20.csv*)
-   *  (*.csv*)
+   * Calcification rate and pH<sub>GVC</sub> for all calcification experiments (*Calc_all_18April20.csv*)
+   * Calcification rate and GVC O<sub>2</sub> of *M. cavernosa* only in calcification experiments (*O2_cav_17April20.csv*)
    *  (*.csv*)
 2. Figures
-   * Main Figures
-   * Supplemental Figures
+   * Fig1_polyp_diagram.png (*not created in Rmarkdown script*)
+   * Fig2_corals_electrode_images.png (*not created in Rmarkdown script*)
+   * Fig3_
+   * Fig4_
+   * Fig5_
+   * Fig6_
+   * Fig7_Calcification.pdf
 
