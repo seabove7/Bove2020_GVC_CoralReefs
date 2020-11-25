@@ -15,6 +15,7 @@
 1. Data
    * Representative light/dark *M. cavernosa* GVC O<sub>2</sub> (*LD_O2_mcav_20Jun17.csv*)
    * Representative light/dark GVC pH of both species (*LD_pH_all_20Jun17.csv*)
+   * Representative stepwise light/dark GVC pH of both species (*LD_step_pH_all_21Jun17.csv*)
    * Calcification rate and GVC O<sub>2</sub> of *M. cavernosa* only in calcification experiments (*Calc_O2_mcav_17April20.csv*)
    * Calcification rate and pH<sub>GVC</sub> for all calcification experiments (*Calc_pH_all_18April20.csv*)
 2. Figures
@@ -22,7 +23,7 @@
    * Fig2_corals_electrode_images.png (*not created in Rmarkdown script*)
    * Fig3_LD_O2.pdf
    * Fig4_LD_pH.pdf
-   * Fig5_
-   * Fig6_
+   * Fig5_stepwise_pH.pdf
+   * Fig6_LD_pH_summary.pdf
    * Fig7_Calcification.pdf
 
