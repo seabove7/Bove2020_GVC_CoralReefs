@@ -396,6 +396,9 @@ cav_step_dark_labs <- substitute(paste(Slope[dark]==s, "; P < 0.01; R\U00B2"==r)
 
 ```{r MCAV summary LD figure}
 
+###### This is temporary, need to move it when finished!
+sum <- summarySE(measurevar = "pH", groupvars = c("treat", "coral", "exp", "light.dark"), data = LD_stats)
+
 ## MCAV figure
 cav_LD_summary_sum <- subset(sum, coral !="dun")
 cav_LD_summary_sum$test <- paste(cav_LD_summary_sum$coral, cav_LD_summary_sum$exp, sep = "_")
@@ -476,7 +479,7 @@ dun_LD_summary_plot <- ggplot(data = dun_LD_summary_sum) +
 ```
 
 
-```{r summary LD final plot}
+```{r summary LD final plot, fig.align = 'center', fig.width = 8, fig.height = 3.5}
 
 plot_grid(cav_LD_summary_plot, dun_LD_summary_plot,  labels = c("(a) M. cavernosa", "(b) D. axifuga"), scale = 0.87) +
   ggsave(file = "Figures/Fig6_LD_pH_summary.pdf", height = 3.5, width = 8, useDingbats = FALSE)
