@@ -13,7 +13,7 @@
 
 #### Repository contains the following:
 1. Data
-   * *M. cavernosa* Light/Dark GVC O<sub>2</sub> (*LD_O2_mcav_20Jun17.csv*)
+   * Light/Dark *M. cavernosa* GVC O<sub>2</sub> (*LD_O2_mcav_20Jun17.csv*)
    * Calcification rate and GVC O<sub>2</sub> of *M. cavernosa* only in calcification experiments (*Calc_O2_mcav_17April20.csv*)
    * Calcification rate and pH<sub>GVC</sub> for all calcification experiments (*Calc_pH_all_18April20.csv*)
 2. Figures
