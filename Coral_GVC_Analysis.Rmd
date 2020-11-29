@@ -32,6 +32,7 @@ library(r2glmm)
 library(cowplot)
 library(extrafont)
 library(plotly)
+library(tidyverse)
 library(kableExtra)
 library(pander)
 library(gridExtra)
@@ -99,30 +100,430 @@ Simplified diagram of a coral polyp and skeleton morphology, with enlargements o
 Photographs of the three study corals under the same lighting conditions and the experimental setup used in this study: **a** *Montastraea cavernosa* colony 1. **b** *M. cavernosa* colony 2. and **c** *Duncanopsammia axifuga*. **d** Photographs of the pH microelectrode inserted through the mouth of *Montastraea cavernosa* and **e** *Duncanopsammia axifuga*. **f** Photograph of the micromanipulator setup used for inserting the microelectrode (identified with the arrows in **d, e** into the coral polyp and the coral’s incubation water bath)
 
 
+### <span style="color: #0072B2;">**Table 1**</span>
+
+```{r table 1 carbonate data, message=FALSE, warning=FALSE}
+
+carbonate <- read.csv("Tables/CarbonateSW_data_10Dec19.csv", header = TRUE)
+carbonate$pHt <- factor(carbonate$pHt, levels = c("8.2pH", "7.9pH", "7.6pH"))
+carbonate$coral <- factor(carbonate$coral, levels = c("MCAV1", "MCAV2", "DAXI"))
+
+
+## Create table 1 of carbonate parameters
+Table1 <- carbonate %>% 
+  group_by(pHt) %>% 
+  summarise("Seawater pH" = round(mean(pHw), 2),
+            "TA" = round(mean(TAi), 0),
+            "DIC" = round(mean(DICi), 0),
+            "pCO2" = round(mean(pCO2i), 0),
+            "HCO3" = round(mean(HCO3i), 0),
+            "CO3" = round(mean(CO3i), 0),
+            "arag" = round(mean(aragi), 12))
+
+## Rmarkdown table 1
+kable(Table1[-1], booktabs = TRUE) %>% 
+  kable_styling(font_size = 12, full_width = FALSE)
+
+```
+
+
+
 ## Light/Dark Experiments {.tabset}
 
-### Tables and analyses
+### Supplemental Tables
+
+#### **Table S1**
+Calcification experiment carbonate parameters. Representative changes in carbonate chemistry during the 1.5 h calcification incubations reported in Figure 8. The nominal target pH values used were 8.2 (Control), 7.9 and 7.6. The R package *seacarb* was used to calculate the various carbonate species using measured pH-NBS and total alkalinity as the known parameters. Concentrations in µmol kg^-1^; *p*CO~2~ in µatm. MCAV 1 = *Montastraea cavernosa* No 1; MCAV 2 = *M. cavernosa* colony No 2; DAXI = *Duncanopsammia axifuga*.
+
+```{r table S1 carbonate params, message=FALSE, warning=FALSE}
+
+## Create table S1 of initial and final carbonate parameters
+TableS1 <- carbonate %>% 
+  group_by(coral, pHt) %>% 
+  summarise("TAi" = round(mean(TAi), 0),
+            "TAf" = round(mean(TAf), 0),
+            "DICi" = round(mean(DICi), 0),
+            "DICf" = round(mean(DICf), 0),
+            "pCO2i" = round(mean(pCO2i), 0),
+            "pCO2f" = round(mean(pCO2f), 0),
+            "HCO3i" = round(mean(HCO3i), 0),
+            "HCO3f" = round(mean(HCO3f), 0),
+            "CO3i" = round(mean(CO3i), 0),
+            "CO3f" = round(mean(CO3f), 0),
+            "aragi" = round(mean(aragi), 1),
+            "aragf" = round(mean(aragf), 1))
+
+## Rmarkdown table S1
+kable(TableS1[-1], booktabs = TRUE) %>% 
+  kable_styling(font_size = 12, full_width = FALSE) %>% 
+  pack_rows("MCAV 1", 1, 3) %>%
+  pack_rows("MCAV 2", 4, 6) %>%
+  pack_rows("DAXI", 7, 9)
+
+```
+
+<br/>
 
 ```{r}
 
 ## Read in all L/D data for analyses
-LD_stats <- read.csv("LDAll_19Sep17.csv", header = TRUE)
+LD_stats <- read.csv("Data/LD_all_data_19Sep17.csv", header = TRUE)
 LD_stats$treat <- factor(LD_stats$treat, levels = c("8.2", "7.9", "7.6")) # relevel pH treatments
 
 ## Subset dataframe
 # light or dark
 light_all <- subset(LD_stats, light.dark=="light")
-dark_dark <- subset(LD_stats, light.dark=="dark")
+dark_all <- subset(LD_stats, light.dark=="dark")
 
 # MCAV light and DAXI light
 light_cav <- subset(light_all, species=="Mcav")
 light_dun <- subset(light_all, coral=="dun")
 
 # MCAV dark and DAXI dark
-dark_cav <- subset(dark_dark, species=="Mcav")
-dark_dun <- subset(dark_dark, coral=="dun")
+dark_cav <- subset(dark_all, species=="Mcav")
+dark_dun <- subset(dark_all, coral=="dun")
 
 ```
+
+
+
+#### **Table S2**
+pH~GVC~ in the Light. Mean (±S.D.) pH~GVC~ measured during the light portion of the Light-Dark (LD) and Stepwise (STEP) experiments. Pairwise comparisons of pH~GVC~ between the two experiments used Tukey Honest Significant Differences. Asterisk denotes significant differences in mean pH~GVC~ between experiment types. n = the number of replicate runs of any given treatment protocol for each type of experiment.
+
+```{r table S2 light GVC summary, message=FALSE, warning=FALSE}
+
+## Create table S2 of initial and final carbonate parameters
+TableS2 <- light_all %>% 
+  group_by(species, treat, exp) %>% 
+  summarise("Mean" = round(mean(pH), 2),
+            "(+/-) SD Maximum" = round(sd(pH), 2),
+            "n" = n(),
+            "del pH" = round(mean(pH) - mean(water), 2))
+
+
+## Rmarkdown table S2
+kable(TableS2[-1], booktabs = TRUE) %>% 
+  kable_styling(font_size = 12, full_width = FALSE) %>% 
+  pack_rows("M. cavernosa", 1, 6) %>%
+  pack_rows("D. axifuga", 7, 12)
+
+
+```
+
+<br/>
+
+
+#### **Table S3a**
+Light pH~GVC~ ANOVA model. ANOVA model output assessing the effect of pH~SW~ on measured pH~GVC~ in the light during either Light-Dark or Stepwise experiments for all coral colonies.
+
+***M. cavernosa* in Light-Dark trials**
+```{r table S3a MCAV L/D light GVC anova}
+
+## MCAV light ANOVAs
+# Light data (L/D)
+light_cava<-subset(light_cav, exp=="l/d")
+lmcav_lm1<-aov(pH~treat, data=light_cava)
+pander(summary(lmcav_lm1))
+
+```
+
+***M. cavernosa* in Stepwise trials**
+```{r table S3a MCAV step light GVC anova}
+
+# Light data (step)
+light_cavb<-subset(light_cav, exp=="step")
+lmcav_lm2<-aov(pH~treat, data=light_cavb)
+pander(summary(lmcav_lm2))
+
+```
+
+
+***D. axifuga* in Light-Dark trials**
+```{r table S3a DAXI L/D light GVC anova}
+
+## DAXI light ANOVAs
+# Light data (L/D)
+light_duna<-subset(light_dun, exp=="l/d")
+ldun_lm1<-aov(pH~treat, data=light_duna)
+pander(summary(ldun_lm1))
+
+```
+
+***D. axifuga* in Stepwise trials**
+```{r table S3a DAXI step light GVC anova}
+
+# Light data (step)
+light_dunb<-subset(light_dun, exp=="step")
+ldun_lm2<-aov(pH~treat, data=light_dunb)
+pander(summary(ldun_lm2))
+
+```
+
+<br/>
+
+
+#### **Table S3b**
+Light pH~GVC~: Post Hoc Comparisons. Pairwise comparisons of mean pH~GVC~ among pH~SW~ treatments in the light for both types of experiments using Tukey Honest Significant Differences.  
+
+```{r table S3b light GVC post hoc}
+
+## MCAV light Tukey tests
+# Light data (L/D)
+lcav_ld_tukey <- as.data.frame(TukeyHSD(lmcav_lm1)[["treat"]])
+lcav_ld_tukey$Experiment <- "Light-Dark"
+lcav_ld_tukey$Coral <- "M. cavernosa"
+lcav_ld_tukey$Treatments <- rownames(lcav_ld_tukey)
+lcav_ld_tukey <- lcav_ld_tukey[c(6,5,7,4)]
+
+# Light data (step)
+lcav_step_tukey <- as.data.frame(TukeyHSD(lmcav_lm2)[["treat"]])
+lcav_step_tukey$Experiment <- "Stepwise"
+lcav_step_tukey$Coral <- "M. cavernosa"
+lcav_step_tukey$Treatments <- rownames(lcav_step_tukey)
+lcav_step_tukey <- lcav_step_tukey[c(6,5,7,4)]
+
+
+
+## DAXI light Tukey tests
+# Light data (L/D)
+ldun_ld_tukey <- as.data.frame(TukeyHSD(ldun_lm1)[["treat"]])
+ldun_ld_tukey$Experiment <- "Light-Dark"
+ldun_ld_tukey$Coral <- "D axifuga"
+ldun_ld_tukey$Treatments <- rownames(ldun_ld_tukey)
+ldun_ld_tukey <- ldun_ld_tukey[c(6,5,7,4)]
+
+# Light data (step)
+ldun_step_tukey <- as.data.frame(TukeyHSD(ldun_lm2)[["treat"]])
+ldun_step_tukey$Experiment <- "Stepwise"
+ldun_step_tukey$Coral <- "D axifuga"
+ldun_step_tukey$Treatments <- rownames(ldun_step_tukey)
+ldun_step_tukey <- ldun_step_tukey[c(6,5,7,4)]
+
+## Combine into 1 table
+all_light_tukey <- rbind(lcav_ld_tukey, lcav_step_tukey, ldun_ld_tukey, ldun_step_tukey)
+
+
+## Rmarkdown table 
+
+kable(all_light_tukey[-1], booktabs = TRUE, row.names = FALSE) %>% 
+  kable_styling(font_size = 12, full_width = FALSE) %>% 
+  pack_rows("M. cavernosa", 1, 6) %>%
+  pack_rows("D. axifuga", 7, 12)
+
+```
+
+<br/>
+
+
+
+#### **Table S4**
+pH~GVC~ in the Dark. Mean (±S.D.) pH~GVC~ measured during the dark portion of the Light-Dark (LD) and Stepwise (STEP) experiments. Pairwise comparisons of pH~GVC~ between the two experiments used Tukey Honest Significant Differences. Asterisk denotes significant differences in mean pH~GVC~ between experiment types. n = the number of replicate runs of any given treatment protocol for each type of experiment.
+
+```{r table S4 dark GVC summary, message=FALSE, warning=FALSE}
+
+## Create table S4 of initial and final carbonate parameters
+TableS4 <- dark_all %>% 
+  group_by(species, treat, exp) %>% 
+  summarise("Mean" = round(mean(pH), 2),
+            "(+/-) SD Maximum" = round(sd(pH), 2),
+            "n" = n(),
+            "del pH" = round(mean(pH) - mean(water), 2))
+
+
+## Rmarkdown table S4
+kable(TableS4[-1], booktabs = TRUE) %>% 
+  kable_styling(font_size = 12, full_width = FALSE) %>% 
+  pack_rows("M. cavernosa", 1, 6) %>%
+  pack_rows("D. axifuga", 7, 12)
+
+
+```
+
+<br/>
+  
+  
+#### **Table S5a**
+Dark pH~GVC~ ANOVA model. ANOVA model output assessing the effect of pH~SW~ on measured pH~GVC~ in the dark during either Light-Dark or Stepwise experiments for all coral colonies.
+  
+***M. cavernosa* in Light-Dark trials**
+```{r table S5a MCAV L/D dark GVC anova}
+
+## MCAV dark ANOVAs
+# Dark data (L/D)
+dark_cava<-subset(dark_cav, exp=="l/d")
+dmcav_lm1<-aov(pH~treat, data=dark_cava)
+pander(summary(dmcav_lm1))
+
+```
+
+***M. cavernosa* in Stepwise trials**
+```{r table S5a MCAV step dark GVC anova}
+
+# Dark data (step)
+dark_cavb<-subset(dark_cav, exp=="step")
+dmcav_lm2<-aov(pH~treat, data=dark_cavb)
+pander(summary(dmcav_lm2))
+
+```
+
+***D. axifuga* in Light-Dark trials**
+```{r table S5a DAXI L/D dark GVC anova}
+
+## DAXI dark ANOVAs
+# Dark data (L/D)
+dark_duna<-subset(dark_dun, exp=="l/d")
+ddun_lm1<-aov(pH~treat, data=dark_duna)
+pander(summary(ddun_lm1))
+
+```
+
+***D. axifuga* in Stepwise trials**
+```{r table S5a DAXI step dark GVC anova}
+
+# Dark data (step)
+dark_dunb<-subset(dark_dun, exp=="step")
+ddun_lm2<-aov(pH~treat, data=dark_dunb)
+pander(summary(ddun_lm2))
+
+```
+
+<br/>
+  
+  
+#### **Table S5b**
+Dark pH~GVC~: Post Hoc Comparisons. Pairwise comparisons of mean pH~GVC~ among pH~SW~ treatments in the dark for both types of experiments using Tukey Honest Significant Differences.  
+  
+```{r table S5b dark GVC post hoc}
+
+## MCAV dark Tukey tests
+# Dark data (L/D)
+dcav_ld_tukey <- as.data.frame(TukeyHSD(dmcav_lm1)[["treat"]])
+dcav_ld_tukey$Experiment <- "Light-Dark"
+dcav_ld_tukey$Coral <- "M. cavernosa"
+dcav_ld_tukey$Treatments <- rownames(dcav_ld_tukey)
+dcav_ld_tukey <- dcav_ld_tukey[c(6,5,7,4)]
+
+# Dark data (step)
+dcav_step_tukey <- as.data.frame(TukeyHSD(dmcav_lm2)[["treat"]])
+dcav_step_tukey$Experiment <- "Stepwise"
+dcav_step_tukey$Coral <- "M. cavernosa"
+dcav_step_tukey$Treatments <- rownames(dcav_step_tukey)
+dcav_step_tukey <- dcav_step_tukey[c(6,5,7,4)]
+
+
+
+## DAXI dark Tukey tests
+# Dark data (L/D)
+ddun_ld_tukey <- as.data.frame(TukeyHSD(ddun_lm1)[["treat"]])
+ddun_ld_tukey$Experiment <- "Light-Dark"
+ddun_ld_tukey$Coral <- "D axifuga"
+ddun_ld_tukey$Treatments <- rownames(ddun_ld_tukey)
+ddun_ld_tukey <- ddun_ld_tukey[c(6,5,7,4)]
+
+# Dark data (step)
+ddun_step_tukey <- as.data.frame(TukeyHSD(ddun_lm2)[["treat"]])
+ddun_step_tukey$Experiment <- "Stepwise"
+ddun_step_tukey$Coral <- "D axifuga"
+ddun_step_tukey$Treatments <- rownames(ddun_step_tukey)
+ddun_step_tukey <- ddun_step_tukey[c(6,5,7,4)]
+
+
+## Combine into 1 table
+all_dark_tukey <- rbind(dcav_ld_tukey, dcav_step_tukey, ddun_ld_tukey, ddun_step_tukey)
+
+
+## Rmarkdown table 
+kable(all_dark_tukey[-1], booktabs = TRUE, row.names = FALSE) %>% 
+  kable_styling(font_size = 12, full_width = FALSE) %>% 
+  pack_rows("M. cavernosa", 1, 6) %>%
+  pack_rows("D. axifuga", 7, 12)
+
+```
+
+<br/>
+
+
+#### **Table S6**
+Comparison of the response of pHGVC to decreases in pH~SW~ between the two experimental protocols used, Light-Dark vs Stepwise: Post Hoc Comparisons. Tukey Honest Significant Differences post hoc adjusted p values from 2-way ANOVAs assessing the effects of experimental design (Light-Dark vs Stepwise) and pH~SW~ treatment on either *M. cavernosa* or *D. axifuga* pH~GVC~ in the light and the dark. The pairwise comparisons between experiments at each treatment pH are only shown for the interaction term (Treatment * Experiment) because these were used in determining differences between experimental design on pH~GVC~.
+
+```{r table S6 post hoc between experimental designs}
+
+## MCAV experimental comparisons
+# ANOVA 
+lcav_lm <- aov(pH ~ treat * exp, data = light_cav) # Light
+dcav_lm <- aov(pH ~ treat * exp, data = dark_cav) # Dark
+
+# Light Tukey tests
+cav_l_trt_tukey <- as.data.frame(TukeyHSD(lcav_lm)[["treat"]]) # extract treatment pairwise comparisons
+cav_l_exp_tukey <- as.data.frame(TukeyHSD(lcav_lm)[["exp"]]) # extract experiment pairwise comparisons
+cav_l_both_tukey <- as.data.frame(TukeyHSD(lcav_lm)[["treat:exp"]])[c(3,8,12),] # extract combined comparisons of interest only
+cav_l_all_tukey <- rbind(cav_l_trt_tukey, cav_l_exp_tukey, cav_l_both_tukey) # combined all comparisons into single df
+cav_l_all_tukey$Coral <- "M. cavernosa" # add species ID column
+cav_l_all_tukey$Light <- "Light P adj." # add light column
+cav_l_all_tukey$`Pairwise Comparisons` <- rownames(cav_l_all_tukey) # add column of row names to df
+cav_l_all_tukey <- cav_l_all_tukey[c(5,6,7,4)] # subset for desired columns
+
+# Dark Tukey tests
+cav_d_trt_tukey <- as.data.frame(TukeyHSD(dcav_lm)[["treat"]]) # extract treatment pairwise comparisons
+cav_d_exp_tukey <- as.data.frame(TukeyHSD(dcav_lm)[["exp"]]) # extract experiment pairwise comparisons
+cav_d_both_tukey <- as.data.frame(TukeyHSD(dcav_lm)[["treat:exp"]])[c(3,8,12),] # extract combined comparisons of interest only
+cav_d_all_tukey <- rbind(cav_d_trt_tukey, cav_d_exp_tukey, cav_d_both_tukey) # combined all comparisons into single df
+cav_d_all_tukey$Coral <- "M. cavernosa" # add species ID column
+cav_d_all_tukey$Light <- "Dark P adj." # add light column
+cav_d_all_tukey$`Pairwise Comparisons` <- rownames(cav_d_all_tukey) # add column of row names to df
+cav_d_all_tukey <- cav_d_all_tukey[c(5,6,7,4)] # subset for desired columns
+
+# Combined tests 
+cav_all_tukey <- rbind(cav_l_all_tukey, cav_d_all_tukey)
+cav_all_tukey <- spread(cav_all_tukey, Light, `p adj`)
+
+
+
+## DAXI experimental comparisons
+# ANOVA 
+ldun_lm <- aov(pH ~ treat * exp, data = light_dun) # Light
+ddun_lm <- aov(pH ~ treat * exp, data = dark_dun) # Dark
+
+# Light Tukey tests
+dun_l_trt_tukey <- as.data.frame(TukeyHSD(ldun_lm)[["treat"]]) # extract treatment pairwise comparisons
+dun_l_exp_tukey <- as.data.frame(TukeyHSD(ldun_lm)[["exp"]]) # extract experiment pairwise comparisons
+dun_l_both_tukey <- as.data.frame(TukeyHSD(ldun_lm)[["treat:exp"]])[c(3,8,12),] # extract combined comparisons of interest only
+dun_l_all_tukey <- rbind(dun_l_trt_tukey, dun_l_exp_tukey, dun_l_both_tukey) # combined all comparisons into single df
+dun_l_all_tukey$Coral <- "D. axifuga" # add species ID column
+dun_l_all_tukey$Light <- "Light P adj." # add light column
+dun_l_all_tukey$`Pairwise Comparisons` <- rownames(dun_l_all_tukey) # add column of row names to df
+dun_l_all_tukey <- dun_l_all_tukey[c(5,6,7,4)] # subset for desired columns
+
+# Dark Tukey tests
+dun_d_trt_tukey <- as.data.frame(TukeyHSD(ddun_lm)[["treat"]]) # extract treatment pairwise comparisons
+dun_d_exp_tukey <- as.data.frame(TukeyHSD(ddun_lm)[["exp"]]) # extract experiment pairwise comparisons
+dun_d_both_tukey <- as.data.frame(TukeyHSD(ddun_lm)[["treat:exp"]])[c(3,8,12),] # extract combined comparisons of interest only
+dun_d_all_tukey <- rbind(dun_d_trt_tukey, dun_d_exp_tukey, dun_d_both_tukey) # combined all comparisons into single df
+dun_d_all_tukey$Coral <- "D. axifuga" # add species ID column
+dun_d_all_tukey$Light <- "Dark P adj." # add dark column
+dun_d_all_tukey$`Pairwise Comparisons` <- rownames(dun_d_all_tukey) # add column of row names to df
+dun_d_all_tukey <- dun_d_all_tukey[c(5,6,7,4)] # subset for desired columns
+
+# Combined tests 
+dun_all_tukey <- rbind(dun_l_all_tukey, dun_d_all_tukey)
+dun_all_tukey <- spread(dun_all_tukey, Light, `p adj`)
+
+
+
+## Combine into single table
+all_tukey <- rbind(cav_all_tukey, dun_all_tukey)
+all_tukey <- all_tukey[c(1,2,4,3)]
+
+
+## Rmarkdown table 
+kable(all_tukey, booktabs = TRUE, row.names = FALSE) %>% 
+  kable_styling(font_size = 12, full_width = FALSE) %>% 
+  pack_rows("M. cavernosa", 1, 7) %>%
+  pack_rows("D. axifuga", 8, 14)
+
+```
+
+<br/>
 
 
 ### <span style="color: #0072B2;">**Figure 3**</span>
@@ -489,6 +890,17 @@ Summary of the mean (± SD) pH~GVC~ measurements made in the light–dark (denot
 
 <br/>
 
+
+### <span style="color: #0072B2;">**Table 2**</span>
+
+
+NEED TO ADD THIS
+
+```{r}
+
+```
+
+<br/>
 
 
 ## Calcification Trials {.tabset}
