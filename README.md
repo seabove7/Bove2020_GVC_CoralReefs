@@ -28,6 +28,6 @@
    * Fig6_LD_pH_summary.pdf
    * Fig7_Calcification.pdf
  3. Tables
-   * Cabonate data for Figure 1 and figure S1 (*CarbonateSW_data_10Dec19.csv*)
-   * Summary in Table 2 from light/dark trials (*LD_table2_30April20.csv*)
+    * Cabonate data for Figure 1 and figure S1 (*CarbonateSW_data_10Dec19.csv*)
+    * Summary in Table 2 from light/dark trials (*LD_table2_30April20.csv*)
 
