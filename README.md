@@ -12,14 +12,15 @@
 
 
 #### Repository contains the following:
-1. Data
+1. R markdown script and html output with all code and analyses included in manuscript (*Coral_GVC_Analysis*)
+2. Data
    * Representative light/dark *M. cavernosa* GVC O<sub>2</sub> (*LD_O2_mcav_20Jun17.csv*)
    * Representative light/dark GVC pH of both species (*LD_pH_all_20Jun17.csv*)
    * Representative stepwise light/dark GVC pH of both species (*LD_step_pH_all_21Jun17.csv*)
    * All light/dark GVC data in different pH treatments for analyses (*LD_all_data_19Sep17.csv*)
    * Calcification rate and GVC O<sub>2</sub> of *M. cavernosa* only in calcification experiments (*Calc_O2_mcav_17April20.csv*)
    * Calcification rate and pH<sub>GVC</sub> for all calcification experiments (*Calc_pH_all_18April20.csv*)
-2. Figures
+3. Figures
    * Fig1_polyp_diagram.png (*not created in Rmarkdown script*)
    * Fig2_corals_electrode_images.png (*not created in Rmarkdown script*)
    * Fig3_LD_O2.pdf
@@ -27,7 +28,7 @@
    * Fig5_stepwise_pH.pdf
    * Fig6_LD_pH_summary.pdf
    * Fig7_Calcification.pdf
- 3. Tables
+ 4. Tables
     * Cabonate data for Figure 1 and figure S1 (*CarbonateSW_data_10Dec19.csv*)
     * Summary in Table 2 from light/dark trials (*LD_table2_30April20.csv*)
 
