@@ -19,6 +19,7 @@ output:
 
 knitr::opts_chunk$set(echo = FALSE)
 options(warn = -1)
+options(knitr.kable.NA = '')
 
 ```
 
@@ -102,6 +103,8 @@ Photographs of the three study corals under the same lighting conditions and the
 
 ### <span style="color: #0072B2;">**Table 1**</span>
 
+Initial carbonate chemistry values for the seawater in the three carboys used for the experimental pH treatments conducted in this study
+
 ```{r table 1 carbonate data, message=FALSE, warning=FALSE}
 
 carbonate <- read.csv("Tables/CarbonateSW_data_10Dec19.csv", header = TRUE)
@@ -126,11 +129,10 @@ kable(Table1[-1], booktabs = TRUE) %>%
 
 ```
 
+The nominal target pH values used were 8.2 (control), 7.9 and 7.6. The R package *seacarb* was used to calculate the various carbonate species using measured pH-NBS and total alkalinity as the known parameters. Concentrations in $\mu$mol kg^-1^; *p*CO~2~ in $\mu$atm.
 
 
-## Light/Dark Experiments {.tabset}
-
-### Supplemental Tables
+### Table S1
 
 #### **Table S1**
 Calcification experiment carbonate parameters. Representative changes in carbonate chemistry during the 1.5 h calcification incubations reported in Figure 8. The nominal target pH values used were 8.2 (Control), 7.9 and 7.6. The R package *seacarb* was used to calculate the various carbonate species using measured pH-NBS and total alkalinity as the known parameters. Concentrations in µmol kg^-1^; *p*CO~2~ in µatm. MCAV 1 = *Montastraea cavernosa* No 1; MCAV 2 = *M. cavernosa* colony No 2; DAXI = *Duncanopsammia axifuga*.
@@ -164,7 +166,258 @@ kable(TableS1[-1], booktabs = TRUE) %>%
 
 <br/>
 
-```{r}
+
+## Light/Dark Experiments {.tabset}
+
+### <span style="color: #0072B2;">**Figure 3**</span>
+
+```{r MCAV O2 LD plot, fig.align = 'center', fig.width = 5.5, fig.height = 3}
+
+LD_o2 <- read.csv("Data/LD_O2_mcav_20Jun17.csv", header = TRUE)
+
+ggplot()+
+  geom_rect(aes(xmin=0.16674,xmax=10.18194,ymin=-Inf, ymax=Inf), fill="lightgrey", alpha=0.4) +
+  geom_rect(aes(xmin= 10.18194,xmax=20.28126,ymin=-Inf, ymax=Inf), fill="lightgoldenrod", alpha=0.4) +
+  geom_rect(aes(xmin= 20.28126,xmax=30.3801,ymin=-Inf, ymax=Inf), fill="lightgrey", alpha=0.4) +
+  geom_rect(aes(xmin= 30.3801,xmax=40.3119,ymin=-Inf, ymax=Inf), fill="lightgoldenrod", alpha=0.4) +
+  geom_rect(aes(xmin= 40.3119,xmax=52.1637,ymin=-Inf, ymax=Inf), fill="lightgrey", alpha=0.4) +
+  geom_rect(aes(xmin= 52.1637,xmax=55.0011,ymin=-Inf, ymax=Inf), fill="lightgoldenrod", alpha=0.4) +
+  annotate("text", x = 47, y = 430, label = "Montastraea cavernosa", fontface = "italic", size = 2.8) +
+  theme(panel.grid.major=element_blank(), panel.grid.minor=element_blank(), panel.background=element_blank(),strip.text=element_text(face="italic"), axis.line=element_line(color="black"), legend.key=element_blank(), text=element_text(family="Times New Roman"))+
+  coord_cartesian(xlim = c(0.05, 55), ylim = c(0,450), expand = FALSE) +
+  #ylim(0,450) +
+  ylab(expression(paste("GVC O"[2] ~ "saturation (%)"))) +
+  xlab("Time (min)") +
+  geom_line(data = LD_o2, aes(time.min., o2sat), size=1) +
+  ggsave("Figures/Fig3_LD_O2.pdf", height = 3, width = 5.5, useDingbats = FALSE)
+
+```
+*Montastraea cavernosa*: representative example of the change in GVC O~2~ saturation as measured by an oxygen microelectrode in response to changes in light level (0 vs 300–400 $\mu$E m^-2^ s^-1^) at 8.2 pH~SW~ (control). GVC O~2~ decreased in the dark to near 0% saturation and then increased to ca. 400% saturation. Gray background represents times in the dark, while yellow background denotes the lights being on. Horizontal dashed line is the measured incubation seawater % O~2~ saturation
+
+<br/>
+
+
+### <span style="color: #0072B2;">**Figure 4**</span>
+
+```{r LD data setup}
+
+## Read in data and make seawater pH a factor
+LD_all <- read.csv("Data/LD_pH_all_20Jun17.csv", header = TRUE)
+LD_all$fwater <- factor(LD_all$water)
+LD_all$fwater<-factor(LD_all$water, levels = c("8.2","7.9","7.6"))
+
+## Subset by species
+LD_cav <- subset(LD_all, species == "MCAV")
+LD_dun <- subset(LD_all, species == "DAXI")
+
+```
+
+```{r LD pH MCAV plots}
+
+## 8.2 pH plot
+LD_mcav_82 <- subset(LD_cav, water == "8.2")
+
+LD_mcav_82_plot <- ggplot() +
+  geom_rect(aes(xmin=-Inf,xmax=10,ymin=-Inf, ymax=Inf), fill="lightgoldenrod", alpha=0.4) +
+  geom_rect(aes(xmin= 10,xmax=58,ymin=-Inf, ymax=Inf), fill="lightgrey", alpha=0.4) +
+  geom_rect(aes(xmin=58,xmax=107,ymin=-Inf, ymax=Inf), fill="lightgoldenrod", alpha=0.4) +
+  geom_rect(aes(xmin= 107,xmax=160,ymin=-Inf, ymax=Inf), fill="lightgrey", alpha=0.4) + 
+  geom_rect(aes(xmin=160,xmax=Inf,ymin=-Inf, ymax=Inf), fill="lightgoldenrod",alpha=0.4) +
+  scale_x_continuous(limits = c(0, 225)) +
+  geom_hline(yintercept = 8.2, size=0.5, linetype=2, colour="grey") +
+  geom_line(data = LD_mcav_82, aes(x = time, y = gvc), size = 1, colour = "#0072B2") +
+  ylab("") +
+  xlab("") +
+  ggtitle("") +
+  theme(panel.grid.major=element_blank(), panel.grid.minor=element_blank(), panel.background=element_blank(),strip.background=element_blank(), strip.text=element_text(face="italic"), axis.line=element_line(color="black"), legend.key=element_blank(), text=element_text(family="Times New Roman")) +
+  scale_color_manual(values=c("#0072B2")) +
+  ylim(6.5,9)	
+
+## 7.9 pH plot
+LD_mcav_79 <- subset(LD_cav, water == "7.9")
+
+LD_mcav_79_plot <- ggplot() +
+  geom_rect(aes(xmin=-Inf,xmax=18,ymin=-Inf, ymax=Inf), fill="lightgoldenrod", alpha=0.4) +
+  geom_rect(aes(xmin= 18,xmax=85,ymin=-Inf, ymax=Inf), fill="lightgrey", alpha=0.4) +
+  geom_rect(aes(xmin=85,xmax=130,ymin=-Inf, ymax=Inf), fill="lightgoldenrod", alpha=0.4) +
+  geom_rect(aes(xmin= 130,xmax=177,ymin=-Inf, ymax=Inf), fill="lightgrey", alpha=0.4) +
+  geom_rect(aes(xmin=177,xmax=Inf,ymin=-Inf, ymax=Inf), fill="lightgoldenrod",alpha=0.4) +
+  scale_x_continuous(limits = c(0, 225)) +
+  geom_hline(yintercept = 7.9, size=0.5, linetype=2, colour="grey") +
+  geom_line(data = LD_mcav_79, aes(x = time, y = gvc), size = 1, colour = "#009E73") +
+  ylab("") +
+  xlab("") +
+  theme(panel.grid.major=element_blank(), panel.grid.minor=element_blank(), panel.background=element_blank(),strip.background=element_blank(), strip.text=element_text(face="italic"), axis.line=element_line(color="black"), legend.key=element_blank(), text=element_text(family="Times New Roman")) +
+  scale_color_manual(values=c("#0072B2")) +
+  ylim(6.5,9)
+
+
+## 7.6 pH plot
+LD_mcav_76 <- subset(LD_cav, water == "7.6")
+
+LD_mcav_76_plot <- ggplot() +
+  geom_rect(aes(xmin=-Inf,xmax=10,ymin=-Inf, ymax=Inf), fill="lightgoldenrod", alpha=0.4) +
+  geom_rect(aes(xmin= 10,xmax=61,ymin=-Inf, ymax=Inf), fill="lightgrey", alpha=0.4) +
+  geom_rect(aes(xmin=61,xmax=106,ymin=-Inf, ymax=Inf), fill="lightgoldenrod", alpha=0.4) +
+  geom_rect(aes(xmin= 106,xmax=156,ymin=-Inf, ymax=Inf), fill="lightgrey", alpha=0.4) +
+  geom_rect(aes(xmin=156,xmax=Inf,ymin=-Inf, ymax=Inf), fill="lightgoldenrod",alpha=0.4) +
+  scale_x_continuous(limits = c(0, 225)) +
+  geom_hline(yintercept = 7.6, size=0.5, linetype=2, colour="grey") +
+  geom_line(data = LD_mcav_76, aes(x = time, y = gvc), size = 1, colour = "#D55E00") +
+  xlab("") +
+  ylab("") +
+  theme(panel.grid.major=element_blank(), panel.grid.minor=element_blank(), panel.background=element_blank(),strip.background=element_blank(), strip.text=element_text(face="italic"), axis.line=element_line(color="black"), legend.key=element_blank(), text=element_text(family="Times New Roman")) +
+  scale_color_manual(values=c("#0072B2")) +
+  ylim(6.5,9)
+
+```
+
+```{r LD pH DAXI plots}
+
+## 8.2 pH plot
+LD_dun_82 <- subset(LD_dun, water == "8.2")
+
+LD_dun_82_plot <- ggplot() +
+  geom_rect(aes(xmin=-Inf,xmax=10,ymin=-Inf, ymax=Inf), fill="lightgoldenrod", alpha=0.4) +
+  geom_rect(aes(xmin= 10,xmax=33,ymin=-Inf, ymax=Inf), fill="lightgrey", alpha=0.4) + 
+  geom_rect(aes(xmin=33,xmax=58,ymin=-Inf, ymax=Inf), fill="lightgoldenrod", alpha=0.4) +
+  geom_rect(aes(xmin= 58,xmax=80,ymin=-Inf, ymax=Inf), fill="lightgrey", alpha=0.4) + 
+  geom_rect(aes(xmin=80,xmax=Inf,ymin=-Inf, ymax=Inf), fill="lightgoldenrod",alpha=0.4) +
+  scale_x_continuous(limits = c(0, 130)) +
+  geom_hline(yintercept = 8.2, size=0.5, linetype=2, colour="grey") +
+  geom_line(data = LD_dun_82, aes(x = time, y = gvc), size = 1, colour = "#0072B2") +
+  ylab("") +
+  xlab("") +
+  ggtitle("") +
+  theme(panel.grid.major=element_blank(), panel.grid.minor=element_blank(), panel.background=element_blank(),strip.background=element_blank(), strip.text=element_text(face="italic"), axis.line=element_line(color="black"), legend.key=element_blank(), text=element_text(family="Times New Roman")) +
+  scale_color_manual(values=c("#0072B2")) +
+  ylim(6.5,9)	
+
+## 7.9 pH plot
+LD_dun_79 <- subset(LD_dun, water == "7.9")
+
+LD_dun_79_plot <- ggplot() +
+  geom_rect(aes(xmin=-Inf,xmax=12,ymin=-Inf, ymax=Inf), fill="lightgoldenrod", alpha=0.4) +
+  geom_rect(aes(xmin= 12,xmax=42,ymin=-Inf, ymax=Inf), fill="lightgrey", alpha=0.4) +
+  geom_rect(aes(xmin=42,xmax=74,ymin=-Inf, ymax=Inf), fill="lightgoldenrod", alpha=0.4) +
+  geom_rect(aes(xmin= 74,xmax=103,ymin=-Inf, ymax=Inf), fill="lightgrey", alpha=0.4) +
+  geom_rect(aes(xmin=103,xmax=Inf,ymin=-Inf, ymax=Inf), fill="lightgoldenrod",alpha=0.4) +
+  scale_x_continuous(limits = c(0, 130)) +
+  geom_hline(yintercept = 7.9, size=0.5, linetype=2, colour="grey") +
+  geom_line(data = LD_dun_79, aes(x = time, y = gvc), size = 1, colour = "#009E73") +
+  ylab("") +
+  xlab("") +
+  theme(panel.grid.major=element_blank(), panel.grid.minor=element_blank(), panel.background=element_blank(),strip.background=element_blank(), strip.text=element_text(face="italic"), axis.line=element_line(color="black"), legend.key=element_blank(), text=element_text(family="Times New Roman")) +
+  scale_color_manual(values=c("#0072B2")) +
+  ylim(6.5,9)
+
+
+## 7.6 pH plot
+LD_dun_76 <- subset(LD_dun, water == "7.6")
+
+LD_dun_76_plot <- ggplot() +
+  geom_rect(aes(xmin=-Inf,xmax=10,ymin=-Inf, ymax=Inf), fill="lightgoldenrod", alpha=0.4) +
+  geom_rect(aes(xmin= 10,xmax=37,ymin=-Inf, ymax=Inf), fill="lightgrey", alpha=0.4) +
+  geom_rect(aes(xmin=37,xmax=69,ymin=-Inf, ymax=Inf), fill="lightgoldenrod", alpha=0.4) +
+  geom_rect(aes(xmin= 69,xmax=88,ymin=-Inf, ymax=Inf), fill="lightgrey", alpha=0.4) +
+  geom_rect(aes(xmin=88,xmax=Inf,ymin=-Inf, ymax=Inf), fill="lightgoldenrod",alpha=0.4) +
+  scale_x_continuous(limits = c(0, 130)) +
+  geom_hline(yintercept = 7.6, size=0.5, linetype=2, colour="grey") +
+  geom_line(data = LD_dun_76, aes(x = time, y = gvc), size = 1, colour = "#D55E00") +
+  xlab("") +
+  ylab("") +
+  theme(panel.grid.major=element_blank(), panel.grid.minor=element_blank(), panel.background=element_blank(),strip.background=element_blank(), strip.text=element_text(face="italic"), axis.line=element_line(color="black"), legend.key=element_blank(), text=element_text(family="Times New Roman")) +
+  scale_color_manual(values=c("#0072B2")) +
+  ylim(6.5,9)
+
+```
+
+```{r LD pH full plot, fig.align = 'center', fig.width = 6.8, fig.height = 6.5}
+
+## Create column of each species' plots
+LD_cav_plot <- plot_grid(LD_mcav_82_plot, LD_mcav_79_plot, LD_mcav_76_plot, ncol = 1)
+LD_dun_plot <- plot_grid(LD_dun_82_plot, LD_dun_79_plot, LD_dun_76_plot, ncol = 1)
+
+## Combined species plot into single plot
+LD_full_plot <- plot_grid(LD_cav_plot, LD_dun_plot, ncol = 2, rel_widths = c(0.9, 0.58), labels = c("(a)  M. cavernosa", "(b)  D. axifuga"), hjust = -0.07, vjust = 1.3, label_size = 10)
+
+## Create labels for axes 
+y_grob <- textGrob("GVC pH", gp = gpar(fontsize = 11), rot = 90)
+x_grob <- textGrob("Time (m)", gp = gpar(fontsize = 11))
+
+## Final, combined plot
+LD_full_plot_final <- grid.arrange(arrangeGrob(LD_full_plot, left = y_grob, bottom = x_grob))
+
+## Save final plot
+ggsave(file = "Figures/Fig4_LD_pH.pdf", LD_full_plot_final, width = 6.8, height = 6.5, useDingbats = FALSE)
+
+```
+"Light–dark" experiment: representative example of pH~GVC~ profiles with changes from light (300–400 $\mu$E m^-2^ s^-1^) to dark (0 $\mu$E m^-2^ s^-1^) measurement conditions for **a** *Montastraea cavernosa* and **b** *Duncanopsammia axifuga* at 8.2 pH~SW~ (control: blue, upper panel), 7.9 pH~SW~ (green, middle panel), and 7.6 pH~SW~ (red, lower panel). The horizontal gray dashed lines represent incubation pH~SW~
+
+<br/>
+
+
+### <span style="color: #0072B2;">**Figure 5**</span>
+
+```{r stepwise pH setup}
+
+## Read in and manipulate data
+step_all <- read.csv("Data/LD_step_pH_all_21Jun17.csv", header = TRUE)
+step_all$water <- factor(step_all$water)
+step_all$water <- factor(step_all$water, levels = c("8.2","7.9","7.6", "T"))
+step_all$light <- factor(step_all$light, levels = c("L","D"))
+
+## Subset for each species
+cav_step <- subset(step_all, species == "MCAV") # M. cavernosa
+dun_step <- subset(step_all, species == "DAXI") # D. axifuga
+
+```
+
+```{r stepwise pH plots, fig.align = 'center', fig.width = 8, fig.height = 4.2}
+
+## MCAV plots
+cav_step_plot <- ggplot(cav_step, aes(x = time, y = gvc, colour = water, group = water2)) +
+  geom_point(size = 0.5) +
+  xlab("") +
+  ylab("") +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), panel.background = element_blank(), strip.background = element_blank(), strip.text = element_text(face = "italic"), text=element_text(family="Times New Roman")) +
+  theme(legend.position = c(0.11, 0.67), legend.key.size = unit(0.2, "cm"), legend.text = element_text(size = 8)) +
+  guides(colour = guide_legend(override.aes = list(linetype = 0, size = 3))) +
+  xlim(0, 220) +
+  ylim(6.9, 8.9) +
+  facet_wrap(~ light, ncol = 1, labeller = as_labeller(c(L = "Light", D = "Dark"))) +
+  scale_color_manual("", labels = c("8.2 pH","7.9 pH","7.6 pH"), values = c("#0072B2","#009E73","#D55E00","grey"), breaks = c("8.2","7.9","7.6")) +
+  geom_line(aes(x = time, y = water2))
+
+
+## DAXI plots
+dun_step_plot <- ggplot(dun_step, aes(x = time, y = gvc, colour = water, group = water2)) +
+  geom_point(size = 0.5) +
+  xlab("") +
+  ylab("") +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), panel.background = element_blank(), strip.background = element_blank(), strip.text = element_text(face = "italic"), text=element_text(family="Times New Roman")) +
+  theme(legend.position ="none") +
+  xlim(0, 220) +
+  ylim(6.9, 8.9) +
+  facet_wrap(~ light, ncol = 1, labeller = as_labeller(c(L = "Light", D = "Dark"))) +
+  scale_color_manual("", labels = c("8.2 pH","7.9 pH","7.6 pH","T"), values = c("#0072B2","#009E73","#D55E00","grey")) +
+  geom_line(aes(x = time, y = water2))
+
+
+## Combine plots and save as final
+plot_grid(cav_step_plot, dun_step_plot, labels = c("(a) M. cavernosa","(b) D. axifuga"), label_size = 12, scale = 0.95) +
+  ggsave(file = "Figures/Fig5_stepwise_pH.pdf", height = 4.2, width = 8, useDingbats = FALSE)
+
+```
+"Stepwise" experiment: representative example of pH~GVC~ profiles with sequential stepwise decreases in incubation pH~SW~ from 8.2 (control: blue, first segment), to 7.9 (green, second segment), to 7.6 (red, third segment) for **a** *Montastraea cavernosa* and **b** *Duncanopsammia axifuga*. Experiments were repeated both in the light (upper panel) and dark (lower panel). The gray portion of each line denotes adjustment time in which external pH was transitioning from one pH treatment to another by bubbling with CO~2~ and the horizontal lines represent external pH~SW~ levels
+
+<br/>
+
+
+### <span style="color: #0072B2;">**Figure 6**</span>
+
+
+```{r LD dataframes setup}
 
 ## Read in all L/D data for analyses
 LD_stats <- read.csv("Data/LD_all_data_19Sep17.csv", header = TRUE)
@@ -186,6 +439,147 @@ dark_dun <- subset(dark_all, coral=="dun")
 ```
 
 
+```{r MCAV summary model and labels}
+
+## Linear model
+# light values
+cav_L_fig6_lm <- lm(pH ~ water, data = light_cav)
+cav_l_slope <- cav_L_fig6_lm[["coefficients"]][["water"]]
+cav_l_p <- summary(cav_L_fig6_lm)[["coefficients"]][2, 4]
+cav_l_r <- summary(cav_L_fig6_lm)[["adj.r.squared"]]
+
+# dark values
+cav_D_fig6_lm <- lm(pH ~ water, data = dark_cav)
+cav_d_slope <- cav_D_fig6_lm[["coefficients"]][["water"]]
+cav_d_p <- summary(cav_D_fig6_lm)[["coefficients"]][2, 4]
+cav_d_r <- summary(cav_D_fig6_lm)[["adj.r.squared"]]
+
+
+## Labels for plot
+cav_step_light_labs <- substitute(paste(Slope[light]==s, "; P"==p, "; R\U00B2"==r), list(s = format(cav_l_slope[1], digits = 2), p = format(cav_l_p[1], digits = 2), r = format(cav_l_r[1], digits = 2)))
+cav_step_dark_labs <- substitute(paste(Slope[dark]==s, "; P < 0.01; R\U00B2"==r), list(s = format(cav_d_slope[1], digits = 2), p = format(cav_d_p[1], digits = 2), r = format(cav_d_r[1], digits = 2)))
+
+```
+
+```{r MCAV summary LD figure}
+
+###### This is temporary, need to move it when finished!
+sum <- summarySE(measurevar = "pH", groupvars = c("treat", "coral", "exp", "light.dark"), data = LD_stats)
+
+## MCAV figure
+cav_LD_summary_sum <- subset(sum, coral !="dun")
+cav_LD_summary_sum$test <- paste(cav_LD_summary_sum$coral, cav_LD_summary_sum$exp, sep = "_")
+cav_LD_summary_sum$colour <- paste(cav_LD_summary_sum$treat, cav_LD_summary_sum$light.dark, sep = "_")
+cav_LD_summary_sum$shape <- paste(cav_LD_summary_sum$exp, cav_LD_summary_sum$light.dark, sep = "_")
+cav_LD_summary_sum$treat <- as.numeric(levels(cav_LD_summary_sum$treat))[cav_LD_summary_sum$treat]
+
+cav_LD_summary_plot <- ggplot(data = cav_LD_summary_sum) +
+  geom_smooth(aes(x = treat, y = pH, group = light.dark), method="lm", se = FALSE, colour = "darkgrey") +
+  geom_errorbar(aes(x = treat, ymin = pH - sd, ymax = pH + sd, colour = colour, group = test), width=0.07, size=0.8, position = position_dodge(width=0.07)) +
+  geom_point(aes(x = treat, y = pH, shape = shape, colour = colour, group = test, fill = exp), size=2.5, position = position_dodge(width=0.07)) +
+  scale_color_manual(values=c("#D55E00", "#D55E00", "#009E73","#009E73", "#0072B2", "#0072B2")) +
+  scale_shape_manual(values=c(16,21,17,24,16,21,17,24)) +
+  scale_fill_manual(values = c("white","white")) +
+  geom_segment(aes(x = 7.45, xend = 7.75, y = 7.6, yend = 7.6), linetype = "longdash", colour = "#D55E00") +
+  geom_segment(aes(x = 8.05, xend = 8.35, y = 8.2, yend = 8.2), linetype = "longdash", colour = "#0072B2") +
+  geom_segment(aes(x = 7.75, xend = 8.05, y = 7.9, yend = 7.9), linetype = "longdash", colour = "#009E73") +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), strip.background = element_blank(), panel.border = element_rect(colour = "black", fill=NA, size=1), legend.position = "none", text=element_text(family="Times New Roman")) +
+  scale_x_continuous(breaks=c(7.6, 7.9, 8.2)) +
+  annotate("text", x = 7.8, y = 9, label = deparse(cav_step_light_labs), parse = TRUE, size = 3) +
+  annotate("text", x = 7.8, y = 6.5, label = deparse(cav_step_dark_labs), parse = TRUE, size = 3) +
+  ylab("GVC pH") +
+  ylim(6.5, 9.1) +
+  xlab("Seawater pH")
+
+```
+
+
+```{r DAXI summary model and labels}
+
+## Linear model
+# light values
+dun_L_fig6_lm <- lm(pH ~ water, data = light_dun)
+dun_l_slope <- dun_L_fig6_lm[["coefficients"]][["water"]]
+dun_l_p <- summary(dun_L_fig6_lm)[["coefficients"]][2, 4]
+dun_l_r <- summary(dun_L_fig6_lm)[["adj.r.squared"]]
+
+# dark values
+dun_D_fig6_lm <- lm(pH ~ water, data = dark_dun)
+dun_d_slope <- dun_D_fig6_lm[["coefficients"]][["water"]]
+dun_d_p <- summary(dun_D_fig6_lm)[["coefficients"]][2, 4]
+dun_d_r <- summary(dun_D_fig6_lm)[["adj.r.squared"]]
+
+
+## Labels for plot
+dun_step_light_labs <- substitute(paste(Slope[light]==s, "; P < 0.01; R\U00B2"==r), list(s = format(dun_l_slope[1], digits = 2), p = format(dun_l_p[1], digits = 2), r = format(dun_l_r[1], digits = 2)))
+dun_step_dark_labs <- substitute(paste(Slope[dark]==s, "; P < 0.01; R\U00B2"==r), list(s = format(dun_d_slope[1], digits = 2), p = format(dun_d_p[1], digits = 2), r = format(dun_d_r[1], digits = 2)))
+
+```
+
+```{r DAXI summary LD figure}
+
+## DAXI figure
+dun_LD_summary_sum <- subset(sum, coral == "dun")
+dun_LD_summary_sum$test <- paste(dun_LD_summary_sum$coral, dun_LD_summary_sum$exp, sep = "_")
+dun_LD_summary_sum$colour <- paste(dun_LD_summary_sum$treat, dun_LD_summary_sum$light.dark, sep = "_")
+dun_LD_summary_sum$shape <- paste(dun_LD_summary_sum$exp, dun_LD_summary_sum$light.dark, sep = "_")
+dun_LD_summary_sum$treat <- as.numeric(levels(dun_LD_summary_sum$treat))[dun_LD_summary_sum$treat]
+
+dun_LD_summary_plot <- ggplot(data = dun_LD_summary_sum) +
+  geom_smooth(aes(x = treat, y = pH, group = light.dark), method="lm", se = FALSE, colour = "darkgrey") +
+  geom_errorbar(aes(x = treat, ymin = pH - sd, ymax = pH + sd, colour = colour, group = test), width=0.07, size=0.8, position = position_dodge(width=0.07)) +
+  geom_point(aes(x = treat, y = pH, shape = shape, colour = colour, group = test, fill = exp), size=2.5, position = position_dodge(width=0.07)) +
+  scale_color_manual(values=c("#D55E00", "#D55E00", "#009E73","#009E73", "#0072B2", "#0072B2")) +
+  scale_shape_manual(values=c(16,21,17,24,16,21,17,24)) +
+  scale_fill_manual(values = c("white","white")) +
+  geom_segment(aes(x = 7.45, xend = 7.75, y = 7.6, yend = 7.6), linetype = "longdash", colour = "#D55E00") +
+  geom_segment(aes(x = 8.05, xend = 8.35, y = 8.2, yend = 8.2), linetype = "longdash", colour = "#0072B2") +
+  geom_segment(aes(x = 7.75, xend = 8.05, y = 7.9, yend = 7.9), linetype = "longdash", colour = "#009E73") +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), strip.background = element_blank(), panel.border = element_rect(colour = "black", fill=NA, size=1), legend.position = "none", text=element_text(family="Times New Roman")) +
+  scale_x_continuous(breaks=c(7.6, 7.9, 8.2)) +
+  annotate("text", x = 7.8, y = 9, label = deparse(dun_step_light_labs), parse = TRUE, size = 3) +
+  annotate("text", x = 7.8, y = 6.5, label = deparse(dun_step_dark_labs), parse = TRUE, size = 3) +
+  ylab("GVC pH") +
+  ylim(6.5, 9.1) +
+  xlab("Seawater pH")
+
+```
+
+
+```{r summary LD final plot, fig.align = 'center', fig.width = 8, fig.height = 3.5}
+
+plot_grid(cav_LD_summary_plot, dun_LD_summary_plot,  labels = c("(a) M. cavernosa", "(b) D. axifuga"), scale = 0.87) +
+  ggsave(file = "Figures/Fig6_LD_pH_summary.pdf", height = 3.5, width = 8, useDingbats = FALSE)
+
+```
+Summary of the mean (± SD) pH~GVC~ measurements made in the light–dark (denoted by circles) and stepwise (denoted by triangles) experiments for (**a**) two colonies of* M. cavernosa* (plotted as separate circles) and (**b**) one colony of *D. axifuga* at the three experimental pH~SW~ treatments (8.2 = blue; 7.9 = green; 7.6 = red). The dashed lines represent pH~SW~ for each treatment. Open symbols denote pH~GVC~ data collected in the light, and solid symbols represent pH~GVC~ data collected in the dark. Linear regression lines and regression statistics are included for each light treatment
+
+<br/>
+
+
+### <span style="color: #0072B2;">**Table 2**</span>
+
+Mean (± SE) maximum and minimum pH~GVC~ values measured for each coral species at the three experimental pH treatments,
+combining the values from both the "light–dark" and "stepwise" experimental protocols (Figs. **4, 5, 6**)
+
+```{r table 2 }
+
+table1 <- read.csv("Tables/LD_table2_30April20.csv", header = TRUE) # read in the table with data
+
+## R markdown table
+kable(table1[-1], booktabs = TRUE) %>% 
+  kable_styling(font_size = 12, full_width = FALSE) %>% 
+  pack_rows("M. cavernosa", 1, 4) %>%
+  pack_rows("D. axifuga", 5, 8)
+
+```
+
+Mean (± S.E.) maximum and minimum pH~GVC~ values measured for each coral species at the three experimental pH treatments, combining the values from both the ‘Light-dark’ and ‘Stepwise’ experimental protocols (see Figures **5, 6** and **7**). The number of incubations included in each mean is represented by “n”. “Δ pH Light” and “Δ pH Dark” are the differences between treatment pH~SW~ and pH~GVC~ at that treatment. “Range of pH~GVC~” was calculated from the mean maximum and minimum for each pH experiment and represents the range of pH~GVC~ that a polyp could experience during a natural diel light cycle. “pH range” for Treatment pH is the range from 8.2 to 7.6, and for Maximum and Minimum pH~GVC~ in Light and Dark, it is the difference between pH~GVC~ at 8.2 and 7.6 seawater pH treatments.
+
+<br/>
+
+
+### Tables S2-S6
 
 #### **Table S2**
 pH~GVC~ in the Light. Mean (±S.D.) pH~GVC~ measured during the light portion of the Light-Dark (LD) and Stepwise (STEP) experiments. Pairwise comparisons of pH~GVC~ between the two experiments used Tukey Honest Significant Differences. Asterisk denotes significant differences in mean pH~GVC~ between experiment types. n = the number of replicate runs of any given treatment protocol for each type of experiment.
@@ -526,383 +920,6 @@ kable(all_tukey, booktabs = TRUE, row.names = FALSE) %>%
 <br/>
 
 
-### <span style="color: #0072B2;">**Figure 3**</span>
-
-```{r MCAV O2 LD plot, fig.align = 'center', fig.width = 5.5, fig.height = 3}
-
-LD_o2 <- read.csv("Data/LD_O2_mcav_20Jun17.csv", header = TRUE)
-
-ggplot()+
-  geom_rect(aes(xmin=0.16674,xmax=10.18194,ymin=-Inf, ymax=Inf), fill="lightgrey", alpha=0.4) +
-  geom_rect(aes(xmin= 10.18194,xmax=20.28126,ymin=-Inf, ymax=Inf), fill="lightgoldenrod", alpha=0.4) +
-  geom_rect(aes(xmin= 20.28126,xmax=30.3801,ymin=-Inf, ymax=Inf), fill="lightgrey", alpha=0.4) +
-  geom_rect(aes(xmin= 30.3801,xmax=40.3119,ymin=-Inf, ymax=Inf), fill="lightgoldenrod", alpha=0.4) +
-  geom_rect(aes(xmin= 40.3119,xmax=52.1637,ymin=-Inf, ymax=Inf), fill="lightgrey", alpha=0.4) +
-  geom_rect(aes(xmin= 52.1637,xmax=55.0011,ymin=-Inf, ymax=Inf), fill="lightgoldenrod", alpha=0.4) +
-  annotate("text", x = 47, y = 430, label = "Montastraea cavernosa", fontface = "italic", size = 2.8) +
-  theme(panel.grid.major=element_blank(), panel.grid.minor=element_blank(), panel.background=element_blank(),strip.text=element_text(face="italic"), axis.line=element_line(color="black"), legend.key=element_blank(), text=element_text(family="Times New Roman"))+
-  coord_cartesian(xlim = c(0.05, 55), ylim = c(0,450), expand = FALSE) +
-  #ylim(0,450) +
-  ylab(expression(paste("GVC O"[2] ~ "saturation (%)"))) +
-  xlab("Time (min)") +
-  geom_line(data = LD_o2, aes(time.min., o2sat), size=1) +
-  ggsave("Figures/Fig3_LD_O2.pdf", height = 3, width = 5.5, useDingbats = FALSE)
-
-```
-*Montastraea cavernosa*: representative example of the change in GVC O~2~ saturation as measured by an oxygen microelectrode in response to changes in light level (0 vs 300–400 $\mu$E m^-2^ s^-1^) at 8.2 pH~SW~ (control). GVC O~2~ decreased in the dark to near 0% saturation and then increased to ca. 400% saturation. Gray background represents times in the dark, while yellow background denotes the lights being on. Horizontal dashed line is the measured incubation seawater % O~2~ saturation
-
-<br/>
-
-
-### <span style="color: #0072B2;">**Figure 4**</span>
-
-```{r LD data setup}
-
-## Read in data and make seawater pH a factor
-LD_all <- read.csv("Data/LD_pH_all_20Jun17.csv", header = TRUE)
-LD_all$fwater <- factor(LD_all$water)
-LD_all$fwater<-factor(LD_all$water, levels = c("8.2","7.9","7.6"))
-
-## Subset by species
-LD_cav <- subset(LD_all, species == "MCAV")
-LD_dun <- subset(LD_all, species == "DAXI")
-
-```
-
-```{r LD pH MCAV plots}
-
-## 8.2 pH plot
-LD_mcav_82 <- subset(LD_cav, water == "8.2")
-
-LD_mcav_82_plot <- ggplot() +
-  geom_rect(aes(xmin=-Inf,xmax=10,ymin=-Inf, ymax=Inf), fill="lightgoldenrod", alpha=0.4) +
-  geom_rect(aes(xmin= 10,xmax=58,ymin=-Inf, ymax=Inf), fill="lightgrey", alpha=0.4) +
-  geom_rect(aes(xmin=58,xmax=107,ymin=-Inf, ymax=Inf), fill="lightgoldenrod", alpha=0.4) +
-  geom_rect(aes(xmin= 107,xmax=160,ymin=-Inf, ymax=Inf), fill="lightgrey", alpha=0.4) + 
-  geom_rect(aes(xmin=160,xmax=Inf,ymin=-Inf, ymax=Inf), fill="lightgoldenrod",alpha=0.4) +
-  scale_x_continuous(limits = c(0, 225)) +
-  geom_hline(yintercept = 8.2, size=0.5, linetype=2, colour="grey") +
-  geom_line(data = LD_mcav_82, aes(x = time, y = gvc), size = 1, colour = "#0072B2") +
-  ylab("") +
-  xlab("") +
-  ggtitle("") +
-  theme(panel.grid.major=element_blank(), panel.grid.minor=element_blank(), panel.background=element_blank(),strip.background=element_blank(), strip.text=element_text(face="italic"), axis.line=element_line(color="black"), legend.key=element_blank(), text=element_text(family="Times New Roman")) +
-  scale_color_manual(values=c("#0072B2")) +
-  ylim(6.5,9)	
-
-## 7.9 pH plot
-LD_mcav_79 <- subset(LD_cav, water == "7.9")
-
-LD_mcav_79_plot <- ggplot() +
-  geom_rect(aes(xmin=-Inf,xmax=18,ymin=-Inf, ymax=Inf), fill="lightgoldenrod", alpha=0.4) +
-  geom_rect(aes(xmin= 18,xmax=85,ymin=-Inf, ymax=Inf), fill="lightgrey", alpha=0.4) +
-  geom_rect(aes(xmin=85,xmax=130,ymin=-Inf, ymax=Inf), fill="lightgoldenrod", alpha=0.4) +
-  geom_rect(aes(xmin= 130,xmax=177,ymin=-Inf, ymax=Inf), fill="lightgrey", alpha=0.4) +
-  geom_rect(aes(xmin=177,xmax=Inf,ymin=-Inf, ymax=Inf), fill="lightgoldenrod",alpha=0.4) +
-  scale_x_continuous(limits = c(0, 225)) +
-  geom_hline(yintercept = 7.9, size=0.5, linetype=2, colour="grey") +
-  geom_line(data = LD_mcav_79, aes(x = time, y = gvc), size = 1, colour = "#009E73") +
-  ylab("") +
-  xlab("") +
-  theme(panel.grid.major=element_blank(), panel.grid.minor=element_blank(), panel.background=element_blank(),strip.background=element_blank(), strip.text=element_text(face="italic"), axis.line=element_line(color="black"), legend.key=element_blank(), text=element_text(family="Times New Roman")) +
-  scale_color_manual(values=c("#0072B2")) +
-  ylim(6.5,9)
-
-
-## 7.6 pH plot
-LD_mcav_76 <- subset(LD_cav, water == "7.6")
-
-LD_mcav_76_plot <- ggplot() +
-  geom_rect(aes(xmin=-Inf,xmax=10,ymin=-Inf, ymax=Inf), fill="lightgoldenrod", alpha=0.4) +
-  geom_rect(aes(xmin= 10,xmax=61,ymin=-Inf, ymax=Inf), fill="lightgrey", alpha=0.4) +
-  geom_rect(aes(xmin=61,xmax=106,ymin=-Inf, ymax=Inf), fill="lightgoldenrod", alpha=0.4) +
-  geom_rect(aes(xmin= 106,xmax=156,ymin=-Inf, ymax=Inf), fill="lightgrey", alpha=0.4) +
-  geom_rect(aes(xmin=156,xmax=Inf,ymin=-Inf, ymax=Inf), fill="lightgoldenrod",alpha=0.4) +
-  scale_x_continuous(limits = c(0, 225)) +
-  geom_hline(yintercept = 7.6, size=0.5, linetype=2, colour="grey") +
-  geom_line(data = LD_mcav_76, aes(x = time, y = gvc), size = 1, colour = "#D55E00") +
-  xlab("") +
-  ylab("") +
-  theme(panel.grid.major=element_blank(), panel.grid.minor=element_blank(), panel.background=element_blank(),strip.background=element_blank(), strip.text=element_text(face="italic"), axis.line=element_line(color="black"), legend.key=element_blank(), text=element_text(family="Times New Roman")) +
-  scale_color_manual(values=c("#0072B2")) +
-  ylim(6.5,9)
-
-```
-
-```{r LD pH DAXI plots}
-
-## 8.2 pH plot
-LD_dun_82 <- subset(LD_dun, water == "8.2")
-
-LD_dun_82_plot <- ggplot() +
-  geom_rect(aes(xmin=-Inf,xmax=10,ymin=-Inf, ymax=Inf), fill="lightgoldenrod", alpha=0.4) +
-  geom_rect(aes(xmin= 10,xmax=33,ymin=-Inf, ymax=Inf), fill="lightgrey", alpha=0.4) + 
-  geom_rect(aes(xmin=33,xmax=58,ymin=-Inf, ymax=Inf), fill="lightgoldenrod", alpha=0.4) +
-  geom_rect(aes(xmin= 58,xmax=80,ymin=-Inf, ymax=Inf), fill="lightgrey", alpha=0.4) + 
-  geom_rect(aes(xmin=80,xmax=Inf,ymin=-Inf, ymax=Inf), fill="lightgoldenrod",alpha=0.4) +
-  scale_x_continuous(limits = c(0, 130)) +
-  geom_hline(yintercept = 8.2, size=0.5, linetype=2, colour="grey") +
-  geom_line(data = LD_dun_82, aes(x = time, y = gvc), size = 1, colour = "#0072B2") +
-  ylab("") +
-  xlab("") +
-  ggtitle("") +
-  theme(panel.grid.major=element_blank(), panel.grid.minor=element_blank(), panel.background=element_blank(),strip.background=element_blank(), strip.text=element_text(face="italic"), axis.line=element_line(color="black"), legend.key=element_blank(), text=element_text(family="Times New Roman")) +
-  scale_color_manual(values=c("#0072B2")) +
-  ylim(6.5,9)	
-
-## 7.9 pH plot
-LD_dun_79 <- subset(LD_dun, water == "7.9")
-
-LD_dun_79_plot <- ggplot() +
-  geom_rect(aes(xmin=-Inf,xmax=12,ymin=-Inf, ymax=Inf), fill="lightgoldenrod", alpha=0.4) +
-  geom_rect(aes(xmin= 12,xmax=42,ymin=-Inf, ymax=Inf), fill="lightgrey", alpha=0.4) +
-  geom_rect(aes(xmin=42,xmax=74,ymin=-Inf, ymax=Inf), fill="lightgoldenrod", alpha=0.4) +
-  geom_rect(aes(xmin= 74,xmax=103,ymin=-Inf, ymax=Inf), fill="lightgrey", alpha=0.4) +
-  geom_rect(aes(xmin=103,xmax=Inf,ymin=-Inf, ymax=Inf), fill="lightgoldenrod",alpha=0.4) +
-  scale_x_continuous(limits = c(0, 130)) +
-  geom_hline(yintercept = 7.9, size=0.5, linetype=2, colour="grey") +
-  geom_line(data = LD_dun_79, aes(x = time, y = gvc), size = 1, colour = "#009E73") +
-  ylab("") +
-  xlab("") +
-  theme(panel.grid.major=element_blank(), panel.grid.minor=element_blank(), panel.background=element_blank(),strip.background=element_blank(), strip.text=element_text(face="italic"), axis.line=element_line(color="black"), legend.key=element_blank(), text=element_text(family="Times New Roman")) +
-  scale_color_manual(values=c("#0072B2")) +
-  ylim(6.5,9)
-
-
-## 7.6 pH plot
-LD_dun_76 <- subset(LD_dun, water == "7.6")
-
-LD_dun_76_plot <- ggplot() +
-  geom_rect(aes(xmin=-Inf,xmax=10,ymin=-Inf, ymax=Inf), fill="lightgoldenrod", alpha=0.4) +
-  geom_rect(aes(xmin= 10,xmax=37,ymin=-Inf, ymax=Inf), fill="lightgrey", alpha=0.4) +
-  geom_rect(aes(xmin=37,xmax=69,ymin=-Inf, ymax=Inf), fill="lightgoldenrod", alpha=0.4) +
-  geom_rect(aes(xmin= 69,xmax=88,ymin=-Inf, ymax=Inf), fill="lightgrey", alpha=0.4) +
-  geom_rect(aes(xmin=88,xmax=Inf,ymin=-Inf, ymax=Inf), fill="lightgoldenrod",alpha=0.4) +
-  scale_x_continuous(limits = c(0, 130)) +
-  geom_hline(yintercept = 7.6, size=0.5, linetype=2, colour="grey") +
-  geom_line(data = LD_dun_76, aes(x = time, y = gvc), size = 1, colour = "#D55E00") +
-  xlab("") +
-  ylab("") +
-  theme(panel.grid.major=element_blank(), panel.grid.minor=element_blank(), panel.background=element_blank(),strip.background=element_blank(), strip.text=element_text(face="italic"), axis.line=element_line(color="black"), legend.key=element_blank(), text=element_text(family="Times New Roman")) +
-  scale_color_manual(values=c("#0072B2")) +
-  ylim(6.5,9)
-
-```
-
-```{r LD pH full plot, fig.align = 'center', fig.width = 6.8, fig.height = 6.5}
-
-## Create column of each species' plots
-LD_cav_plot <- plot_grid(LD_mcav_82_plot, LD_mcav_79_plot, LD_mcav_76_plot, ncol = 1)
-LD_dun_plot <- plot_grid(LD_dun_82_plot, LD_dun_79_plot, LD_dun_76_plot, ncol = 1)
-
-## Combined species plot into single plot
-LD_full_plot <- plot_grid(LD_cav_plot, LD_dun_plot, ncol = 2, rel_widths = c(0.9, 0.58), labels = c("(a)  M. cavernosa", "(b)  D. axifuga"), hjust = -0.07, vjust = 1.3, label_size = 10)
-
-## Create labels for axes 
-y_grob <- textGrob("GVC pH", gp = gpar(fontsize = 11), rot = 90)
-x_grob <- textGrob("Time (m)", gp = gpar(fontsize = 11))
-
-## Final, combined plot
-LD_full_plot_final <- grid.arrange(arrangeGrob(LD_full_plot, left = y_grob, bottom = x_grob))
-
-## Save final plot
-ggsave(file = "Figures/Fig4_LD_pH.pdf", LD_full_plot_final, width = 6.8, height = 6.5, useDingbats = FALSE)
-
-```
-"Light–dark" experiment: representative example of pH~GVC~ profiles with changes from light (300–400 $\mu$E m^-2^ s^-1^) to dark (0 $\mu$E m^-2^ s^-1^) measurement conditions for **a** *Montastraea cavernosa* and **b** *Duncanopsammia axifuga* at 8.2 pH~SW~ (control: blue, upper panel), 7.9 pH~SW~ (green, middle panel), and 7.6 pH~SW~ (red, lower panel). The horizontal gray dashed lines represent incubation pH~SW~
-
-<br/>
-
-
-### <span style="color: #0072B2;">**Figure 5**</span>
-
-```{r stepwise pH setup}
-
-## Read in and manipulate data
-step_all <- read.csv("Data/LD_step_pH_all_21Jun17.csv", header = TRUE)
-step_all$water <- factor(step_all$water)
-step_all$water <- factor(step_all$water, levels = c("8.2","7.9","7.6", "T"))
-step_all$light <- factor(step_all$light, levels = c("L","D"))
-
-## Subset for each species
-cav_step <- subset(step_all, species == "MCAV") # M. cavernosa
-dun_step <- subset(step_all, species == "DAXI") # D. axifuga
-
-```
-
-```{r stepwise pH plots, fig.align = 'center', fig.width = 8, fig.height = 4.2}
-
-## MCAV plots
-cav_step_plot <- ggplot(cav_step, aes(x = time, y = gvc, colour = water, group = water2)) +
-  geom_point(size = 0.5) +
-  xlab("") +
-  ylab("") +
-  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), panel.background = element_blank(), strip.background = element_blank(), strip.text = element_text(face = "italic"), text=element_text(family="Times New Roman")) +
-  theme(legend.position = c(0.11, 0.67), legend.key.size = unit(0.2, "cm"), legend.text = element_text(size = 8)) +
-  guides(colour = guide_legend(override.aes = list(linetype = 0, size = 3))) +
-  xlim(0, 220) +
-  ylim(6.9, 8.9) +
-  facet_wrap(~ light, ncol = 1, labeller = as_labeller(c(L = "Light", D = "Dark"))) +
-  scale_color_manual("", labels = c("8.2 pH","7.9 pH","7.6 pH"), values = c("#0072B2","#009E73","#D55E00","grey"), breaks = c("8.2","7.9","7.6")) +
-  geom_line(aes(x = time, y = water2))
-
-
-## DAXI plots
-dun_step_plot <- ggplot(dun_step, aes(x = time, y = gvc, colour = water, group = water2)) +
-  geom_point(size = 0.5) +
-  xlab("") +
-  ylab("") +
-  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), panel.background = element_blank(), strip.background = element_blank(), strip.text = element_text(face = "italic"), text=element_text(family="Times New Roman")) +
-  theme(legend.position ="none") +
-  xlim(0, 220) +
-  ylim(6.9, 8.9) +
-  facet_wrap(~ light, ncol = 1, labeller = as_labeller(c(L = "Light", D = "Dark"))) +
-  scale_color_manual("", labels = c("8.2 pH","7.9 pH","7.6 pH","T"), values = c("#0072B2","#009E73","#D55E00","grey")) +
-  geom_line(aes(x = time, y = water2))
-
-
-## Combine plots and save as final
-plot_grid(cav_step_plot, dun_step_plot, labels = c("(a) M. cavernosa","(b) D. axifuga"), label_size = 12, scale = 0.95) +
-  ggsave(file = "Figures/Fig5_stepwise_pH.pdf", height = 4.2, width = 8, useDingbats = FALSE)
-
-```
-"Stepwise" experiment: representative example of pH~GVC~ profiles with sequential stepwise decreases in incubation pH~SW~ from 8.2 (control: blue, first segment), to 7.9 (green, second segment), to 7.6 (red, third segment) for **a** *Montastraea cavernosa* and **b** *Duncanopsammia axifuga*. Experiments were repeated both in the light (upper panel) and dark (lower panel). The gray portion of each line denotes adjustment time in which external pH was transitioning from one pH treatment to another by bubbling with CO~2~ and the horizontal lines represent external pH~SW~ levels
-
-<br/>
-
-
-### <span style="color: #0072B2;">**Figure 6**</span>
-
-```{r MCAV summary model and labels}
-
-## Linear model
-# light values
-cav_L_fig6_lm <- lm(pH ~ water, data = light_cav)
-cav_l_slope <- cav_L_fig6_lm[["coefficients"]][["water"]]
-cav_l_p <- summary(cav_L_fig6_lm)[["coefficients"]][2, 4]
-cav_l_r <- summary(cav_L_fig6_lm)[["adj.r.squared"]]
-
-# dark values
-cav_D_fig6_lm <- lm(pH ~ water, data = dark_cav)
-cav_d_slope <- cav_D_fig6_lm[["coefficients"]][["water"]]
-cav_d_p <- summary(cav_D_fig6_lm)[["coefficients"]][2, 4]
-cav_d_r <- summary(cav_D_fig6_lm)[["adj.r.squared"]]
-
-
-## Labels for plot
-cav_step_light_labs <- substitute(paste(Slope[light]==s, "; P"==p, "; R\U00B2"==r), list(s = format(cav_l_slope[1], digits = 2), p = format(cav_l_p[1], digits = 2), r = format(cav_l_r[1], digits = 2)))
-cav_step_dark_labs <- substitute(paste(Slope[dark]==s, "; P < 0.01; R\U00B2"==r), list(s = format(cav_d_slope[1], digits = 2), p = format(cav_d_p[1], digits = 2), r = format(cav_d_r[1], digits = 2)))
-
-```
-
-```{r MCAV summary LD figure}
-
-###### This is temporary, need to move it when finished!
-sum <- summarySE(measurevar = "pH", groupvars = c("treat", "coral", "exp", "light.dark"), data = LD_stats)
-
-## MCAV figure
-cav_LD_summary_sum <- subset(sum, coral !="dun")
-cav_LD_summary_sum$test <- paste(cav_LD_summary_sum$coral, cav_LD_summary_sum$exp, sep = "_")
-cav_LD_summary_sum$colour <- paste(cav_LD_summary_sum$treat, cav_LD_summary_sum$light.dark, sep = "_")
-cav_LD_summary_sum$shape <- paste(cav_LD_summary_sum$exp, cav_LD_summary_sum$light.dark, sep = "_")
-cav_LD_summary_sum$treat <- as.numeric(levels(cav_LD_summary_sum$treat))[cav_LD_summary_sum$treat]
-
-cav_LD_summary_plot <- ggplot(data = cav_LD_summary_sum) +
-  geom_smooth(aes(x = treat, y = pH, group = light.dark), method="lm", se = FALSE, colour = "darkgrey") +
-  geom_errorbar(aes(x = treat, ymin = pH - sd, ymax = pH + sd, colour = colour, group = test), width=0.07, size=0.8, position = position_dodge(width=0.07)) +
-  geom_point(aes(x = treat, y = pH, shape = shape, colour = colour, group = test, fill = exp), size=2.5, position = position_dodge(width=0.07)) +
-  scale_color_manual(values=c("#D55E00", "#D55E00", "#009E73","#009E73", "#0072B2", "#0072B2")) +
-  scale_shape_manual(values=c(16,21,17,24,16,21,17,24)) +
-  scale_fill_manual(values = c("white","white")) +
-  geom_segment(aes(x = 7.45, xend = 7.75, y = 7.6, yend = 7.6), linetype = "longdash", colour = "#D55E00") +
-  geom_segment(aes(x = 8.05, xend = 8.35, y = 8.2, yend = 8.2), linetype = "longdash", colour = "#0072B2") +
-  geom_segment(aes(x = 7.75, xend = 8.05, y = 7.9, yend = 7.9), linetype = "longdash", colour = "#009E73") +
-  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), strip.background = element_blank(), panel.border = element_rect(colour = "black", fill=NA, size=1), legend.position = "none", text=element_text(family="Times New Roman")) +
-  scale_x_continuous(breaks=c(7.6, 7.9, 8.2)) +
-  annotate("text", x = 7.8, y = 9, label = deparse(cav_step_light_labs), parse = TRUE, size = 3) +
-  annotate("text", x = 7.8, y = 6.5, label = deparse(cav_step_dark_labs), parse = TRUE, size = 3) +
-  ylab("GVC pH") +
-  ylim(6.5, 9.1) +
-  xlab("Seawater pH")
-
-```
-
-
-```{r DAXI summary model and labels}
-
-## Linear model
-# light values
-dun_L_fig6_lm <- lm(pH ~ water, data = light_dun)
-dun_l_slope <- dun_L_fig6_lm[["coefficients"]][["water"]]
-dun_l_p <- summary(dun_L_fig6_lm)[["coefficients"]][2, 4]
-dun_l_r <- summary(dun_L_fig6_lm)[["adj.r.squared"]]
-
-# dark values
-dun_D_fig6_lm <- lm(pH ~ water, data = dark_dun)
-dun_d_slope <- dun_D_fig6_lm[["coefficients"]][["water"]]
-dun_d_p <- summary(dun_D_fig6_lm)[["coefficients"]][2, 4]
-dun_d_r <- summary(dun_D_fig6_lm)[["adj.r.squared"]]
-
-
-## Labels for plot
-dun_step_light_labs <- substitute(paste(Slope[light]==s, "; P < 0.01; R\U00B2"==r), list(s = format(dun_l_slope[1], digits = 2), p = format(dun_l_p[1], digits = 2), r = format(dun_l_r[1], digits = 2)))
-dun_step_dark_labs <- substitute(paste(Slope[dark]==s, "; P < 0.01; R\U00B2"==r), list(s = format(dun_d_slope[1], digits = 2), p = format(dun_d_p[1], digits = 2), r = format(dun_d_r[1], digits = 2)))
-
-```
-
-```{r DAXI summary LD figure}
-
-## DAXI figure
-dun_LD_summary_sum <- subset(sum, coral == "dun")
-dun_LD_summary_sum$test <- paste(dun_LD_summary_sum$coral, dun_LD_summary_sum$exp, sep = "_")
-dun_LD_summary_sum$colour <- paste(dun_LD_summary_sum$treat, dun_LD_summary_sum$light.dark, sep = "_")
-dun_LD_summary_sum$shape <- paste(dun_LD_summary_sum$exp, dun_LD_summary_sum$light.dark, sep = "_")
-dun_LD_summary_sum$treat <- as.numeric(levels(dun_LD_summary_sum$treat))[dun_LD_summary_sum$treat]
-
-dun_LD_summary_plot <- ggplot(data = dun_LD_summary_sum) +
-  geom_smooth(aes(x = treat, y = pH, group = light.dark), method="lm", se = FALSE, colour = "darkgrey") +
-  geom_errorbar(aes(x = treat, ymin = pH - sd, ymax = pH + sd, colour = colour, group = test), width=0.07, size=0.8, position = position_dodge(width=0.07)) +
-  geom_point(aes(x = treat, y = pH, shape = shape, colour = colour, group = test, fill = exp), size=2.5, position = position_dodge(width=0.07)) +
-  scale_color_manual(values=c("#D55E00", "#D55E00", "#009E73","#009E73", "#0072B2", "#0072B2")) +
-  scale_shape_manual(values=c(16,21,17,24,16,21,17,24)) +
-  scale_fill_manual(values = c("white","white")) +
-  geom_segment(aes(x = 7.45, xend = 7.75, y = 7.6, yend = 7.6), linetype = "longdash", colour = "#D55E00") +
-  geom_segment(aes(x = 8.05, xend = 8.35, y = 8.2, yend = 8.2), linetype = "longdash", colour = "#0072B2") +
-  geom_segment(aes(x = 7.75, xend = 8.05, y = 7.9, yend = 7.9), linetype = "longdash", colour = "#009E73") +
-  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), strip.background = element_blank(), panel.border = element_rect(colour = "black", fill=NA, size=1), legend.position = "none", text=element_text(family="Times New Roman")) +
-  scale_x_continuous(breaks=c(7.6, 7.9, 8.2)) +
-  annotate("text", x = 7.8, y = 9, label = deparse(dun_step_light_labs), parse = TRUE, size = 3) +
-  annotate("text", x = 7.8, y = 6.5, label = deparse(dun_step_dark_labs), parse = TRUE, size = 3) +
-  ylab("GVC pH") +
-  ylim(6.5, 9.1) +
-  xlab("Seawater pH")
-
-```
-
-
-```{r summary LD final plot, fig.align = 'center', fig.width = 8, fig.height = 3.5}
-
-plot_grid(cav_LD_summary_plot, dun_LD_summary_plot,  labels = c("(a) M. cavernosa", "(b) D. axifuga"), scale = 0.87) +
-  ggsave(file = "Figures/Fig6_LD_pH_summary.pdf", height = 3.5, width = 8, useDingbats = FALSE)
-
-```
-Summary of the mean (± SD) pH~GVC~ measurements made in the light–dark (denoted by circles) and stepwise (denoted by triangles) experiments for (**a**) two colonies of* M. cavernosa* (plotted as separate circles) and (**b**) one colony of *D. axifuga* at the three experimental pH~SW~ treatments (8.2 = blue; 7.9 = green; 7.6 = red). The dashed lines represent pH~SW~ for each treatment. Open symbols denote pH~GVC~ data collected in the light, and solid symbols represent pH~GVC~ data collected in the dark. Linear regression lines and regression statistics are included for each light treatment
-
-<br/>
-
-
-### <span style="color: #0072B2;">**Table 2**</span>
-
-
-NEED TO ADD THIS
-
-```{r}
-
-```
-
-<br/>
-
-
 ## Calcification Trials {.tabset}
 
 ```{r calcification df setup}
@@ -1214,7 +1231,7 @@ dun$pH <- factor(dun$pH, levels = c("8.2","7.9", "7.6")) # reorder pH treatments
 
 #### **Figure 7g:** DAXI calcification rate (nmol CaCO~3~ hr^-1^ polyp^-1^) against seawater pH
 
-```{r DAXI pH rate v SW pH, fig.align = 'center', fig.width = 4, fig.height = 3.5}
+```{r DAXI pH rate v SW pH, fig.align='center', fig.height=3.5, fig.width=4, message=FALSE, warning=FALSE}
 
 ### Statistical analyses
 
@@ -1275,7 +1292,7 @@ pander(anova(dun_pH_calcVpH_lm))
   
 #### **Figure 7h:** DAXI calcification rate (nmol CaCO~3~ hr^-1^ polyp^-1^) against GVC O~2~ saturation
   
-```{r DAXI pH rate v GVC pH, fig.align = 'center', fig.width = 4, fig.height = 3.5}
+```{r DAXI pH rate v GVC pH, fig.align = 'center', fig.width = 4, fig.height = 3.5, message=FALSE, warning=FALSE}
 
 ## Linear model 
 dun_pH_calcVgvc_lm <- lm(nmol ~ gvc, data = dun) # (rate~GVC: S=1774; P=0149; R2=0.1834)
@@ -1317,7 +1334,7 @@ pander(anova(dun_pH_calcVgvc_lm))
   
 #### **Figure 7i:** DAXI GVC O~2~ saturation against seawater pH
   
-```{r DAXI pH GVC pH v SW pH, fig.align = 'center', fig.width = 4, fig.height = 3.5}
+```{r DAXI pH GVC pH v SW pH, fig.align = 'center', fig.width = 4, fig.height = 3.5, message=FALSE, warning=FALSE}
 
 ## Linear model 
 #dun_pH_pHVgvc_lm <- lm(gvc ~ pH + timeb, data = dun) # since time was non-significant, we proceeded without it below:
@@ -1377,6 +1394,64 @@ ggsave("Figures/Fig7_Calcification.pdf", width = 10, height = 9.7, useDingbats =
 
 ```
 Calcification rates and GVC O~2~% saturation or pH~GVC~ measured at three different pH~SW~ treatments during the calcification time series for **a–f** two colonies of *Montastraea cavernosa* and **g–i** one colony of *Duncanopsammia axifuga*. For a summary of the values plotted, see ESM Table S7. Left plots **a, d, g**: mean (± SD) calcification rate plotted against treatment pH~SW~ for each species. For *M. cavernosa*, the data for 1 h and 15 h were combined since they were not significantly different from each other, and the control mean includes the initial incubations for each treatment experiment and the three individual measurements made during the full control experiments (**a, d**). For *D. axifuga*, the control (circles), 1 h (squares), and 15 h (triangles) rates are plotted separately, and linear regressions are provided for each time line (**g**). Center plots **b, e, h**: scatter plots of calcification rate vs the corresponding mean GVC O~2~% saturation or pH~GVC~ of that incubation. (**b, e**) For *M. cavernosa*, open symbols denote colony No 1 and closed symbols denote colony No 2. Symbol shapes indicate which incubation time is represented. There was no significant relationship between GVC O~2~% saturation or pH~GVC~ and calcification for *M. cavernosa*, but there was for *D. axifuga*, and the linear regression statistics are included (**h**). Right plots **c, f, i**: mean GVC O~2~% saturation or pH~GVC~ (± SD) plotted against incubation pH~SW~. There was no significant difference among seawater treatments for *M. cavernosa* **c, f**, but there was a significant positive linear relationship between pH~GVC~ and pH~SW~ for *D. axifuga* and the regression statistics are included (**i**)
+
+<br/>
+
+
+### Table S7
+
+#### **Table S7**
+Calcification experiment summary. Mean value (±S.D.) and sample size (n) of calcification rate, GVC O~2~, or pH~GVC~ measured through the calcification experiments for both species of coral. The calcification rates at pH 8.2 are the means of all measurements at that pH~SW~ including the 1 hour and 15 hour incubations from the all-Control runs. Significant differences are indicated by an asterisk (*) for differences between the control pH~SW~ and low pH~SW~ treatments by letters (a, b) for differences between time of exposure (1h, 15h). 
+
+```{r table s7 of calcification mean values}
+
+## Pull mean +/- SD rate and GVC values during calcification experiments
+O2_calc_table <- O2_calc_sum[c(1:4)]
+O2_calc_table$Model <- "Calcification rate"
+O2_calc_table$Mean <- O2_calc_table$rate
+O2_calc_table <- O2_calc_table[c(5,1,2,6,4)]
+
+O2_pHVgvc_table <- O2_pHVgvc_sum[c(1:4)]
+O2_pHVgvc_table$Model <- "GVC O2"
+O2_pHVgvc_table$Mean <- O2_pHVgvc_table$gvc
+O2_pHVgvc_table <- O2_pHVgvc_table[c(5,1,2,6,4)]
+
+pH_calc_table <- pH_calc_sum[c(1,3:5)]
+pH_calc_table$Model <- "Calcification rate"
+pH_calc_table$Mean <- pH_calc_table$nmol
+pH_calc_table <- pH_calc_table[c(5,1,2,6,4)]
+
+pH_pHVgvc_table <- pH_pHVgvc_sum[c(1,3:5)]
+pH_pHVgvc_table$Model <- "pHGVC"
+pH_pHVgvc_table$Mean <- pH_pHVgvc_table$gvc
+pH_pHVgvc_table <- pH_pHVgvc_table[c(5,1,2,6,4)]
+
+dun_pH_calc_table <- dun_pH_calc_sum[c(1:2,4:6)]
+dun_pH_calc_table$pH <- paste(dun_pH_calc_table$pH, dun_pH_calc_table$timeb, sep = " ")
+dun_pH_calc_table$Model <- "Calcification rate"
+dun_pH_calc_table$Mean <- dun_pH_calc_table$nmol
+dun_pH_calc_table <- dun_pH_calc_table[c(6,1,3,7,5)]
+
+dun_pH_pHVgvc_table <- dun_pH_pHVgvc_sum[c(1,3:6)]
+dun_pH_pHVgvc_table$Model <- "pHGVC"
+dun_pH_pHVgvc_table$Mean <- dun_pH_pHVgvc_table$gvc
+dun_pH_pHVgvc_table <- dun_pH_pHVgvc_table[c(6,1,2,7,4)]
+
+
+## Combine all data frames into single for table
+calc_table_s7 <- rbind(O2_calc_table, O2_pHVgvc_table, pH_calc_table, pH_pHVgvc_table, dun_pH_calc_table, dun_pH_pHVgvc_table)
+calc_table_s7$Mean <- round(calc_table_s7$Mean, 2)
+calc_table_s7$sd <- round(calc_table_s7$sd, 2)
+
+
+## Kable for Rmarkdown of mean calcification rate/GVC values
+kable(calc_table_s7, booktabs = TRUE, row.names = FALSE) %>% 
+  kable_styling(font_size = 12, full_width = FALSE) %>% 
+  pack_rows("M. cavernosa (O2)", 1, 6) %>%
+  pack_rows("M. cavernosa (pH)", 7, 12) %>%  
+  pack_rows("D. axifuga (pH)", 13, 22)
+
+```
 
 
 <br/>
