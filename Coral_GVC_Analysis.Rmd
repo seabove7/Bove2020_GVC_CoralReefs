@@ -81,7 +81,7 @@ Bove, C.B., Whitehead, R.F. & Szmant, A.M. *Responses of coral gastrovascular ca
 
 <br/>
 
-## Coral Poly and Design Setup {.tabset}
+## Coral Polyp and Design Setup {.tabset}
 
 These figures were created using illustrator and image editing software.
 
