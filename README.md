@@ -2,7 +2,7 @@
 
 **GitHub repository containing data and code accompanying the Coral GVC manuscript (Bove et al 2020)**
 
-**Repository DOI:** <a href="https://zenodo.org/badge/latestdoi/315749565"><img src="https://zenodo.org/badge/315749565.svg" alt="DOI"></a>
+**Repository DOI:** [![DOI](https://zenodo.org/badge/315749565.svg)](https://zenodo.org/badge/latestdoi/315749565)
 
 ### Title: *Responses of coral gastrovascular cavity pH during light and dark incubations to reduced seawater pH suggest species-specific responses to the effects of ocean acidification on calcification*
 
